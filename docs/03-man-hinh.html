@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Màn hình — Đập Chuột</title>
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<!-- Hình chuột dùng lại trong các wireframe -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="mouse" viewBox="0 0 64 56">
+      <circle cx="13" cy="15" r="11" fill="#796B73"/><circle cx="13" cy="15" r="6" fill="#F9B9DD"/>
+      <circle cx="51" cy="15" r="11" fill="#796B73"/><circle cx="51" cy="15" r="6" fill="#F9B9DD"/>
+      <ellipse cx="32" cy="34" rx="21" ry="20" fill="#A69BA2"/>
+      <circle cx="24" cy="31" r="3" fill="#1C171A"/><circle cx="40" cy="31" r="3" fill="#1C171A"/>
+      <ellipse cx="32" cy="41" rx="4" ry="3" fill="#D42A87"/>
+    </symbol>
+    <symbol id="mouse-hit" viewBox="0 0 64 56">
+      <circle cx="13" cy="15" r="11" fill="#796B73"/><circle cx="13" cy="15" r="6" fill="#F9B9DD"/>
+      <circle cx="51" cy="15" r="11" fill="#796B73"/><circle cx="51" cy="15" r="6" fill="#F9B9DD"/>
+      <ellipse cx="32" cy="36" rx="22" ry="17" fill="#A69BA2"/>
+      <path d="M20 29l7 7M27 29l-7 7M37 29l7 7M44 29l-7 7" stroke="#1C171A" stroke-width="2.5" stroke-linecap="round"/>
+      <ellipse cx="32" cy="43" rx="4" ry="3" fill="#D42A87"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><span class="brand-mark"><svg width="20" height="20" viewBox="0 0 64 56" aria-hidden="true"><circle cx="14" cy="14" r="11" fill="#fff"/><circle cx="50" cy="14" r="11" fill="#fff"/><ellipse cx="32" cy="34" rx="22" ry="20" fill="#fff"/></svg></span>Đập Chuột · Tài liệu</a>
+    <span class="meta">Phiên bản 1.0</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidenav" aria-label="Mục lục tài liệu">
+    <div class="sidenav-title">Tài liệu</div>
+    <a href="index.html"><span class="num">·</span>Mục lục</a>
+    <a href="01-tong-quan.html"><span class="num">01</span>Tổng quan</a>
+    <a href="02-chuc-nang.html"><span class="num">02</span>Chức năng</a>
+    <a href="03-man-hinh.html" aria-current="page"><span class="num">03</span>Màn hình</a>
+    <a href="04-quy-tac-du-lieu.html"><span class="num">04</span>Quy tắc &amp; dữ liệu</a>
+    <a href="05-ke-hoach-test.html"><span class="num">05</span>Kế hoạch test</a>
+  </nav>
+
+  <main>
+    <div class="page-head">
+      <span class="eyebrow">03 · Màn hình</span>
+      <h1>Màn hình và giao diện</h1>
+      <p class="lead">Ba màn hình chính và hai lớp phủ trên bàn chơi. Wireframe dưới đây vẽ ở khổ điện thoại 360 px; trên máy tính, nội dung căn giữa với chiều rộng tối đa 480 px.</p>
+    </div>
+
+    <section class="card" id="luong">
+      <h2>Luồng màn hình</h2>
+      <div class="flow">
+        <span class="node">Bắt đầu</span><span class="arrow">→ "Bắt đầu" →</span>
+        <span class="node">Đếm ngược 3-2-1</span><span class="arrow">→</span>
+        <span class="node">Đang chơi</span><span class="arrow">→ hết giờ →</span>
+        <span class="node">Kết thúc</span>
+      </div>
+      <div class="flow">
+        <span class="node">Đang chơi / Đếm ngược</span><span class="arrow">→ rời tab →</span>
+        <span class="node alt">Tạm dừng</span><span class="arrow">→ "Tiếp tục" →</span>
+        <span class="node">Đếm ngược 3-2-1</span>
+      </div>
+      <div class="flow">
+        <span class="node">Kết thúc</span><span class="arrow">→ "Chơi lại" →</span>
+        <span class="node">Đếm ngược 3-2-1</span>
+        <span class="arrow">&nbsp;·&nbsp; "Về trang chủ" →</span>
+        <span class="node">Bắt đầu</span>
+      </div>
+    </section>
+
+    <section class="card" id="wireframe">
+      <h2>Wireframe</h2>
+      <div class="screens">
+        <figure style="margin:0">
+          <div class="phone">
+            <div class="wf-spacer"></div>
+            <svg width="88" height="77" style="margin:0 auto"><use href="#mouse"/></svg>
+            <div class="wf-title">Đập Chuột</div>
+            <div class="wf-text">Bấm trúng chuột để ghi điểm.<br>Bạn có 30 giây!</div>
+            <div class="wf-record">🏆 Kỷ lục: 24</div>
+            <div class="wf-spacer"></div>
+            <div class="wf-btn">Bắt đầu</div>
+          </div>
+          <figcaption class="phone-caption"><strong>A.</strong> Màn hình bắt đầu</figcaption>
+        </figure>
+
+        <figure style="margin:0">
+          <div class="phone">
+            <div class="wf-hud"><span>Điểm: 0</span><span>⏱ 30s</span></div>
+            <div class="wf-board">
+              <div class="wf-hole"></div><div class="wf-hole"></div><div class="wf-hole"></div>
+              <div class="wf-hole"></div><div class="wf-hole"></div><div class="wf-hole"></div>
+              <div class="wf-hole"></div><div class="wf-hole"></div><div class="wf-hole"></div>
+              <div class="wf-overlay">3</div>
+            </div>
+            <div class="wf-text">Chuẩn bị…</div>
+          </div>
+          <figcaption class="phone-caption"><strong>B.</strong> Đếm ngược (lớp phủ)</figcaption>
+        </figure>
+
+        <figure style="margin:0">
+          <div class="phone">
+            <div class="wf-hud"><span>Điểm: 12</span><span>⏱ 18s</span></div>
+            <div class="wf-board">
+              <div class="wf-hole"></div><div class="wf-hole"><svg viewBox="0 0 64 56"><use href="#mouse"/></svg></div><div class="wf-hole"></div>
+              <div class="wf-hole"></div><div class="wf-hole"></div><div class="wf-hole"></div>
+              <div class="wf-hole" style="box-shadow:0 0 0 3px var(--color-brand-300)"><svg viewBox="0 0 64 56"><use href="#mouse-hit"/></svg><span class="wf-plus">+1</span></div><div class="wf-hole"></div><div class="wf-hole"></div>
+            </div>
+            <div class="wf-text">Minh hoạ: ô giữa trên có chuột, ô trái dưới vừa bị đập (vẽ chung để so sánh, thực tế chỉ 1 chuột).</div>
+          </div>
+          <figcaption class="phone-caption"><strong>C.</strong> Đang chơi</figcaption>
+        </figure>
+
+        <figure style="margin:0">
+          <div class="phone">
+            <div class="wf-hud"><span>Điểm: 19</span><span class="danger">⏱ 4s</span></div>
+            <div class="wf-board">
+              <div class="wf-hole"></div><div class="wf-hole"></div><div class="wf-hole"></div>
+              <div class="wf-hole"></div><div class="wf-hole"></div><div class="wf-hole"></div>
+              <div class="wf-hole"></div><div class="wf-hole"></div><div class="wf-hole"></div>
+              <div class="wf-overlay small"><div>Tạm dừng<div style="font-weight:400;font-size:14px;margin-top:4px">Còn 4 giây · 19 điểm</div><div class="wf-btn">Tiếp tục</div></div></div>
+            </div>
+            <div class="wf-text">5 giây cuối: thời gian màu đỏ.</div>
+          </div>
+          <figcaption class="phone-caption"><strong>D.</strong> Tạm dừng (lớp phủ)</figcaption>
+        </figure>
+
+        <figure style="margin:0">
+          <div class="phone">
+            <div class="wf-title" style="margin-top:8px">Hết giờ!</div>
+            <div class="wf-result">
+              <div class="tile-label">Điểm của bạn</div>
+              <div class="wf-score">27</div>
+              <span class="badge badge-new">🎉 Kỷ lục mới!</span>
+              <div class="wf-text" style="margin-top:8px">Kỷ lục: 27</div>
+            </div>
+            <div class="wf-stats">
+              <div><b>27</b><span>Trúng</span></div>
+              <div><b>5</b><span>Trượt</span></div>
+              <div><b>84%</b><span>Chính xác</span></div>
+            </div>
+            <div class="wf-spacer"></div>
+            <div class="wf-btn">Chơi lại</div>
+            <div class="wf-btn ghost">Về trang chủ</div>
+          </div>
+          <figcaption class="phone-caption"><strong>E.</strong> Màn hình kết thúc</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="card" id="thanh-phan">
+      <h2>Đặc tả thành phần</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Thành phần</th><th>Đặc tả</th><th>Token</th></tr></thead>
+          <tbody>
+            <tr><td>Nền trang</td><td>Xám ấm nhạt, nội dung căn giữa, rộng tối đa 480 px.</td><td><code>--color-bg-subtle</code></td></tr>
+            <tr><td>Tên game</td><td>Chữ đậm, màu hồng đậm, 36 px (điện thoại 30 px).</td><td><code>--font-size-4xl</code>, <code>--color-brand-600</code></td></tr>
+            <tr><td>Nút chính ("Bắt đầu", "Chơi lại", "Tiếp tục")</td><td>Nền hồng, chữ trắng, cao 48 px, rộng hết khung, bo 8 px. Hover sáng hơn, nhấn đậm hơn.</td><td><code>--color-primary</code>, <code>--control-height-lg</code>, <code>--radius-lg</code></td></tr>
+            <tr><td>Nút phụ ("Về trang chủ")</td><td>Nền trắng, viền hồng nhạt, chữ hồng.</td><td><code>--color-brand-200</code>, <code>--color-brand-600</code></td></tr>
+            <tr><td>Thanh trên (HUD)</td><td>Thẻ trắng, điểm bên trái, thời gian bên phải, chữ 20 px đậm, số dùng <code>tabular-nums</code> để không nhảy chiều rộng.</td><td><code>--font-size-xl</code>, <code>--radius-xl</code></td></tr>
+            <tr><td>Thời gian ≤ 5 giây</td><td>Chữ đỏ.</td><td><code>--color-danger</code></td></tr>
+            <tr><td>Bàn chơi</td><td>Lưới 3×3, khoảng cách 8–12 px, các ô vuông bằng nhau. Mỗi ô ≥ 80×80 px ở màn 360 px.</td><td><code>--space-2</code>/<code>--space-3</code></td></tr>
+            <tr><td>Ô (lỗ)</td><td>Thẻ trắng bo 16 px, đáy có hình elip hồng nhạt làm miệng lỗ; chuột trồi lên từ sau miệng lỗ.</td><td><code>--radius-2xl</code>, <code>--color-brand-100</code></td></tr>
+            <tr><td>Chuột</td><td>SVG: thân xám ấm, tai lót hồng, mũi hồng đậm. Hình "bị đập": mắt chữ X, thân dẹt hơn.</td><td><code>--color-neutral-400/500</code>, <code>--color-brand-200/500</code></td></tr>
+            <tr><td>"+1"</td><td>Chữ xanh lá đậm bay lên và mờ dần ~400 ms.</td><td><code>--color-success</code></td></tr>
+            <tr><td>Lớp phủ (đếm ngược / tạm dừng)</td><td>Phủ trên bàn chơi, nền tối trong mờ, chữ trắng; số đếm ngược 48 px.</td><td><code>--font-size-5xl</code></td></tr>
+            <tr><td>"Kỷ lục mới!"</td><td>Nhãn pill xanh lá nhạt.</td><td><code>--color-success-bg</code>, <code>--radius-full</code></td></tr>
+            <tr><td>Thống kê</td><td>3 thẻ nhỏ: Trúng, Trượt, Chính xác.</td><td><code>--radius-xl</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" id="responsive">
+      <h2>Responsive và thao tác chạm</h2>
+      <ul>
+        <li>Thẻ <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</code>.</li>
+        <li>Bàn chơi co giãn theo chiều rộng: <code>min(100vw - 32px, 480px)</code>, lề hai bên 16 px. Ở 360 px, mỗi ô khoảng 98 px.</li>
+        <li>Trên màn hình thấp (điện thoại xoay ngang), bàn chơi giới hạn theo chiều cao để HUD và bàn cùng vừa màn hình.</li>
+        <li><code>touch-action: manipulation</code> trên bàn chơi để không phóng to khi chạm nhanh hai lần; tắt chọn chữ và menu chạm giữ trên ô.</li>
+        <li>Không có cuộn ngang ở bất kỳ màn hình nào từ 360 px trở lên.</li>
+      </ul>
+    </section>
+
+    <section class="card" id="hieu-ung">
+      <h2>Chuyển động</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Hiệu ứng</th><th>Thời lượng</th><th>Ghi chú</th></tr></thead>
+          <tbody>
+            <tr><td>Chuột trồi lên</td><td>~150 ms</td><td>Trượt từ dưới miệng lỗ lên. Được tính vào thời gian chuột ở trên mặt đất.</td></tr>
+            <tr><td>Chuột lặn xuống</td><td>~150 ms</td><td>Khi bắt đầu lặn, chuột không còn đập được.</td></tr>
+            <tr><td>Đập trúng</td><td>~200 ms</td><td>Đổi hình "bị đập", viền ô nháy hồng, rồi biến mất.</td></tr>
+            <tr><td>"+1"</td><td>~400 ms</td><td>Bay lên 20 px và mờ dần.</td></tr>
+            <tr><td>Số đếm ngược</td><td>1 s / số</td><td>Phóng to nhẹ rồi mờ.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout brand"><p>Chuyển động chỉ để trang trí — logic điểm và thời gian không được phụ thuộc vào việc hiệu ứng chạy xong.</p></div>
+    </section>
+
+    <section class="card" id="tiep-can">
+      <h2>Khả năng tiếp cận</h2>
+      <ul>
+        <li>Tương phản chữ đạt tối thiểu 4.5:1 trên nền trắng.</li>
+        <li>Các nút dùng thẻ <code>&lt;button&gt;</code>, có viền focus hồng khi dùng bàn phím.</li>
+        <li>Điểm và thời gian đặt trong vùng <code>aria-live="polite"</code> ở màn hình kết thúc để trình đọc màn hình đọc kết quả.</li>
+      </ul>
+    </section>
+
+    <nav class="pager" aria-label="Chuyển trang">
+      <a href="02-chuc-nang.html"><small>← Trước</small>02 · Chức năng</a>
+      <a class="next" href="04-quy-tac-du-lieu.html"><small>Tiếp →</small>04 · Quy tắc &amp; dữ liệu</a>
+    </nav>
+  </main>
+</div>
+</body>
+</html>

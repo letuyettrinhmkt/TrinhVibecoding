@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kế hoạch test — Đập Chuột</title>
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><span class="brand-mark"><svg width="20" height="20" viewBox="0 0 64 56" aria-hidden="true"><circle cx="14" cy="14" r="11" fill="#fff"/><circle cx="50" cy="14" r="11" fill="#fff"/><ellipse cx="32" cy="34" rx="22" ry="20" fill="#fff"/></svg></span>Đập Chuột · Tài liệu</a>
+    <span class="meta">Phiên bản 1.0</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidenav" aria-label="Mục lục tài liệu">
+    <div class="sidenav-title">Tài liệu</div>
+    <a href="index.html"><span class="num">·</span>Mục lục</a>
+    <a href="01-tong-quan.html"><span class="num">01</span>Tổng quan</a>
+    <a href="02-chuc-nang.html"><span class="num">02</span>Chức năng</a>
+    <a href="03-man-hinh.html"><span class="num">03</span>Màn hình</a>
+    <a href="04-quy-tac-du-lieu.html"><span class="num">04</span>Quy tắc &amp; dữ liệu</a>
+    <a href="05-ke-hoach-test.html" aria-current="page"><span class="num">05</span>Kế hoạch test</a>
+  </nav>
+
+  <main>
+    <div class="page-head">
+      <span class="eyebrow">05 · Kế hoạch test</span>
+      <h1>Kế hoạch kiểm thử</h1>
+      <p class="lead">Kiểm thử thủ công trên trình duyệt thật, kèm một số phép đo bằng DevTools. Mỗi ca test ghi rõ chức năng (<code>F-xx</code>) và quy tắc (<code>R-xx</code>) mà nó kiểm tra.</p>
+    </div>
+
+    <section class="card" id="moi-truong">
+      <h2>Môi trường</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Thiết bị</th><th>Trình duyệt</th><th>Cách mở</th></tr></thead>
+          <tbody>
+            <tr><td>Máy tính Windows</td><td>Chrome, Edge, Firefox (bản mới nhất)</td><td>Mở trực tiếp file <code>index.html</code> (giao thức <code>file://</code>)</td></tr>
+            <tr><td>Điện thoại Android</td><td>Chrome</td><td>Qua máy chủ tĩnh trong mạng nội bộ, hoặc chép file vào máy</td></tr>
+            <tr><td>iPhone (nếu có)</td><td>Safari</td><td>Như trên</td></tr>
+            <tr><td>Giả lập</td><td>Chrome DevTools, khổ 360×640 và 375×812</td><td>Bật chế độ thiết bị, có chạm</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warn"><p>Trước mỗi đợt test: mở DevTools → Console, đảm bảo không có lỗi. Để test "lần đầu chơi", xoá khoá <code>dap-chuot.best</code> trong Application → Local Storage.</p></div>
+    </section>
+
+    <section class="card" id="ca-test">
+      <h2>Ca test chức năng</h2>
+
+      <h3>Màn hình bắt đầu và đếm ngược</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Liên quan</th></tr></thead>
+          <tbody>
+            <tr><td class="id">TC-01</td><td>Xoá kỷ lục, mở trang.</td><td>Thấy tên game, câu luật, nút "Bắt đầu"; không có dòng kỷ lục.</td><td>F-01, R-18</td></tr>
+            <tr><td class="id">TC-02</td><td>Đặt kỷ lục = 15, tải lại trang.</td><td>Hiện "Kỷ lục: 15".</td><td>F-01, F-10</td></tr>
+            <tr><td class="id">TC-03</td><td>Bấm "Bắt đầu".</td><td>Vào màn hình chơi, HUD <code>Điểm: 0</code> · <code>⏱ 30s</code>; lớp phủ đếm 3 → 2 → 1 (~3 giây); không có chuột.</td><td>F-02</td></tr>
+            <tr><td class="id">TC-04</td><td>Trong lúc đếm ngược, bấm liên tục vào các ô.</td><td>Không có tác dụng; sau lượt, số trượt không tính các cú này.</td><td>F-02, R-10</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Vòng chơi</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Liên quan</th></tr></thead>
+          <tbody>
+            <tr><td class="id">TC-05</td><td>Đếm số ô trên bàn.</td><td>Đúng 9 ô, lưới 3×3, kích thước bằng nhau.</td><td>F-04</td></tr>
+            <tr><td class="id">TC-06</td><td>Không bấm gì, quan sát 30 giây; ghi lại ô của từng con.</td><td>Mỗi lúc chỉ 1 chuột; không có 2 con liên tiếp cùng ô; mỗi con hiện khoảng 0,8–1,2 giây; điểm vẫn 0.</td><td>F-04, R-05–R-08, R-14</td></tr>
+            <tr><td class="id">TC-07</td><td>Đập trúng 1 con.</td><td>Điểm +1 ngay; chuột đổi hình "bị đập", hiện "+1", rồi biến mất; con mới sau ~0,3 giây.</td><td>F-05, F-12, R-11</td></tr>
+            <tr><td class="id">TC-08</td><td>Bấm/chạm thật nhanh 5 lần vào cùng một con.</td><td>Chỉ +1 điểm, chỉ 1 cú trúng, không tính trượt.</td><td>R-11, R-13</td></tr>
+            <tr><td class="id">TC-09</td><td>Bấm vào 3 ô trống.</td><td>Điểm không đổi; cuối lượt "Trượt" = 3.</td><td>F-05, R-12</td></tr>
+            <tr><td class="id">TC-10</td><td>Bấm vào vùng ngoài bàn chơi (HUD, lề).</td><td>Không tính gì.</td><td>F-05</td></tr>
+            <tr><td class="id">TC-11</td><td>Quan sát đồng hồ từ 30 về 0.</td><td>Giảm từng giây; đổi màu đỏ từ <code>5s</code>; dừng ở <code>0s</code>, không âm.</td><td>F-03, R-02</td></tr>
+            <tr><td class="id">TC-12</td><td>Bấm vào ô ngay sau khi đồng hồ về 0.</td><td>Không còn chuột; cú bấm không tính; chuyển sang màn hình kết thúc.</td><td>F-08, R-09, R-10</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Tạm dừng</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Liên quan</th></tr></thead>
+          <tbody>
+            <tr><td class="id">TC-13</td><td>Đang chơi ở giây 20, điểm 8 → chuyển sang tab khác 10 giây → quay lại.</td><td>Thấy lớp phủ "Tạm dừng", đồng hồ vẫn ~20s, điểm 8; không có chuột; game chưa chạy tiếp.</td><td>F-07, R-03</td></tr>
+            <tr><td class="id">TC-14</td><td>Tiếp TC-13, bấm "Tiếp tục".</td><td>Đếm 3-2-1, rồi chơi tiếp từ ~20s, điểm giữ nguyên 8.</td><td>F-07</td></tr>
+            <tr><td class="id">TC-15</td><td>Rời tab khi đang đếm ngược, quay lại, bấm "Tiếp tục".</td><td>Đếm ngược chạy lại từ 3; đồng hồ vẫn 30s.</td><td>F-07</td></tr>
+            <tr><td class="id">TC-16</td><td>Trên điện thoại: khoá màn hình giữa lượt rồi mở lại.</td><td>Như TC-13.</td><td>F-07</td></tr>
+            <tr><td class="id">TC-17</td><td>Rời tab đúng lúc có chuột trên bàn.</td><td>Khi quay lại, chuột đã rút; điểm, trúng, trượt không đổi.</td><td>F-07</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Kết thúc, kỷ lục và chơi lại</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Liên quan</th></tr></thead>
+          <tbody>
+            <tr><td class="id">TC-18</td><td>Kỷ lục = 10, chơi được 12 điểm.</td><td>"Hết giờ!", điểm 12, "Kỷ lục mới!", Kỷ lục: 12.</td><td>F-09, R-16</td></tr>
+            <tr><td class="id">TC-19</td><td>Kỷ lục = 12, chơi được đúng 12.</td><td>Không có "Kỷ lục mới!"; kỷ lục vẫn 12.</td><td>R-17</td></tr>
+            <tr><td class="id">TC-20</td><td>Kỷ lục = 12, chơi được 5.</td><td>Không có "Kỷ lục mới!"; kỷ lục vẫn 12.</td><td>R-16</td></tr>
+            <tr><td class="id">TC-21</td><td>Chưa có kỷ lục, chơi không bấm gì (0 điểm).</td><td>Không báo kỷ lục mới; Chính xác hiển thị "—".</td><td>R-15, R-17</td></tr>
+            <tr><td class="id">TC-22</td><td>Lượt có 8 trúng, 2 trượt.</td><td>Trúng 8, Trượt 2, Chính xác 80%.</td><td>F-06, R-15</td></tr>
+            <tr><td class="id">TC-23</td><td>Lượt có 2 trúng, 1 trượt.</td><td>Chính xác 67% (làm tròn).</td><td>R-15</td></tr>
+            <tr><td class="id">TC-24</td><td>Sau TC-18, tải lại trang.</td><td>Màn hình bắt đầu hiện "Kỷ lục: 12".</td><td>F-10</td></tr>
+            <tr><td class="id">TC-25</td><td>Ở màn hình kết thúc, bấm "Chơi lại".</td><td>Điểm 0, thời gian 30s, đếm 3-2-1, lượt mới bình thường.</td><td>F-11</td></tr>
+            <tr><td class="id">TC-26</td><td>Ở màn hình kết thúc, bấm "Về trang chủ".</td><td>Về màn hình bắt đầu, kỷ lục đã cập nhật.</td><td>F-11</td></tr>
+            <tr><td class="id">TC-27</td><td>Chơi liền 5 lượt bằng "Chơi lại" (có lúc bấm "Chơi lại" 2 lần thật nhanh).</td><td>Mỗi lượt vẫn chỉ 1 chuột/lúc, nhịp chuột như lượt đầu, đồng hồ không chạy nhanh hơn.</td><td>F-11, F-08</td></tr>
+            <tr><td class="id">TC-28</td><td>Mở bằng cửa sổ ẩn danh (hoặc chặn lưu trữ trang).</td><td>Game chạy bình thường, không lỗi Console; kỷ lục có trong phiên nhưng mất khi tải lại.</td><td>F-10</td></tr>
+            <tr><td class="id">TC-29</td><td>Sửa tay <code>dap-chuot.best</code> thành <code>"abc"</code> rồi <code>"-5"</code>, tải lại.</td><td>Coi như chưa có kỷ lục; không lỗi.</td><td>F-10</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" id="do-thoi-gian">
+      <h2>Đo độ chính xác của đồng hồ</h2>
+      <ol>
+        <li>Dùng đồng hồ bấm giờ của điện thoại hoặc quay màn hình.</li>
+        <li>Bắt đầu bấm giờ khi số "1" của đếm ngược biến mất, dừng khi màn hình "Hết giờ!" xuất hiện.</li>
+        <li>Lặp 3 lần trên mỗi trình duyệt máy tính và 1 lần trên điện thoại.</li>
+        <li>Đạt nếu mọi lần đo nằm trong <strong>29,5–30,5 giây</strong> (cho phép thêm sai số phản xạ của người bấm giờ ~0,2 giây).</li>
+        <li>Lặp lại một lần sau khi đã tạm dừng/tiếp tục 2 lần trong lượt: tổng thời gian chơi (không tính lúc dừng và đếm ngược) vẫn ~30 giây.</li>
+      </ol>
+    </section>
+
+    <section class="card" id="giao-dien">
+      <h2>Ca test giao diện và thiết bị</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Kiểm tra</th><th>Kết quả mong đợi</th></tr></thead>
+          <tbody>
+            <tr><td class="id">UI-01</td><td>Khổ 360 px: đo kích thước ô bằng DevTools.</td><td>Mỗi ô ≥ 80×80 px; không có thanh cuộn ngang.</td></tr>
+            <tr><td class="id">UI-02</td><td>Chạm nhanh hai lần liên tiếp vào bàn trên điện thoại thật.</td><td>Trang không phóng to; không bôi chọn chữ; không bật menu chạm giữ.</td></tr>
+            <tr><td class="id">UI-03</td><td>So màu nút, chữ, nền với <code>design/tokens.css</code>.</td><td>Dùng đúng token hồng, nền xám ấm, font Be Vietnam Pro (hoặc font hệ thống khi offline).</td></tr>
+            <tr><td class="id">UI-04</td><td>Xem chuột trồi/lặn và khi bị đập.</td><td>Có chuyển động trượt, không xuất hiện đột ngột; có hình "bị đập" và "+1".</td></tr>
+            <tr><td class="id">UI-05</td><td>Bật "Giảm chuyển động" trong hệ điều hành.</td><td>Không còn trượt; vẫn có đổi hình và "+1"; logic không đổi.</td></tr>
+            <tr><td class="id">UI-06</td><td>Điểm hai chữ số và thời gian thay đổi.</td><td>HUD không nhảy vị trí; chữ dễ đọc.</td></tr>
+            <tr><td class="id">UI-07</td><td>Dùng phím Tab/Enter trên màn hình bắt đầu và kết thúc.</td><td>Thấy viền focus; Enter kích hoạt nút.</td></tr>
+            <tr><td class="id">UI-08</td><td>Máy tính có chuột: rê lên bàn chơi.</td><td>Con trỏ hình búa (tuỳ chọn F-13).</td></tr>
+            <tr><td class="id">UI-09</td><td>Ngắt mạng, mở file.</td><td>Game vẫn chơi được đầy đủ.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" id="tieu-chi">
+      <h2>Tiêu chí hoàn thành</h2>
+      <ul class="checklist">
+        <li>Tất cả ca TC-01 đến TC-29 đạt trên Chrome, Edge, Firefox.</li>
+        <li>UI-01 đến UI-07 và UI-09 đạt; UI-08 đạt nếu có làm F-13.</li>
+        <li>Đo đồng hồ đạt 30 ± 0,5 giây ở mọi lần đo.</li>
+        <li>Không có lỗi trong Console suốt quá trình test.</li>
+        <li>Đã chơi thử trên ít nhất một điện thoại thật.</li>
+      </ul>
+      <div class="callout brand"><p>Lỗi phát hiện được ghi lại kèm: mã ca test, trình duyệt/thiết bị, các bước, kết quả thực tế, ảnh chụp hoặc video nếu có.</p></div>
+    </section>
+
+    <nav class="pager" aria-label="Chuyển trang">
+      <a href="04-quy-tac-du-lieu.html"><small>← Trước</small>04 · Quy tắc &amp; dữ liệu</a>
+      <a class="next" href="index.html"><small>Về →</small>Mục lục</a>
+    </nav>
+  </main>
+</div>
+</body>
+</html>

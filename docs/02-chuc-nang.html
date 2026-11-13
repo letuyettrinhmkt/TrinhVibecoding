@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chức năng — Đập Chuột</title>
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><span class="brand-mark"><svg width="20" height="20" viewBox="0 0 64 56" aria-hidden="true"><circle cx="14" cy="14" r="11" fill="#fff"/><circle cx="50" cy="14" r="11" fill="#fff"/><ellipse cx="32" cy="34" rx="22" ry="20" fill="#fff"/></svg></span>Đập Chuột · Tài liệu</a>
+    <span class="meta">Phiên bản 1.0</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidenav" aria-label="Mục lục tài liệu">
+    <div class="sidenav-title">Tài liệu</div>
+    <a href="index.html"><span class="num">·</span>Mục lục</a>
+    <a href="01-tong-quan.html"><span class="num">01</span>Tổng quan</a>
+    <a href="02-chuc-nang.html" aria-current="page"><span class="num">02</span>Chức năng</a>
+    <a href="03-man-hinh.html"><span class="num">03</span>Màn hình</a>
+    <a href="04-quy-tac-du-lieu.html"><span class="num">04</span>Quy tắc &amp; dữ liệu</a>
+    <a href="05-ke-hoach-test.html"><span class="num">05</span>Kế hoạch test</a>
+  </nav>
+
+  <main>
+    <div class="page-head">
+      <span class="eyebrow">02 · Chức năng</span>
+      <h1>Danh sách chức năng</h1>
+      <p class="lead">Mỗi chức năng có mã <code>F-xx</code> để đối chiếu với kế hoạch test. Nhãn <span class="badge badge-new">Mới</span> đánh dấu phần được bổ sung sau phỏng vấn.</p>
+    </div>
+
+    <section class="card" id="tong-hop">
+      <h2>Bảng tổng hợp</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Chức năng</th><th>Nhóm</th><th>Ưu tiên</th></tr></thead>
+          <tbody>
+            <tr><td class="id">F-01</td><td>Màn hình bắt đầu</td><td>Điều hướng</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-02</td><td>Đếm ngược 3-2-1 <span class="badge badge-new">Mới</span></td><td>Vòng chơi</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-03</td><td>Đồng hồ lượt 30 giây</td><td>Vòng chơi</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-04</td><td>Chuột xuất hiện ngẫu nhiên</td><td>Vòng chơi</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-05</td><td>Đập trúng / đập trượt</td><td>Vòng chơi</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-06</td><td>Tính điểm và thống kê lượt <span class="badge badge-new">Mới</span></td><td>Điểm</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-07</td><td>Tự động tạm dừng khi rời tab <span class="badge badge-new">Mới</span></td><td>Vòng chơi</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-08</td><td>Kết thúc lượt</td><td>Vòng chơi</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-09</td><td>Màn hình kết thúc</td><td>Điều hướng</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-10</td><td>Lưu kỷ lục</td><td>Dữ liệu</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-11</td><td>Chơi lại / Về trang chủ <span class="badge badge-new">Mới</span></td><td>Điều hướng</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-12</td><td>Hiệu ứng trồi/lặn và phản hồi đập trúng</td><td>Trải nghiệm</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-13</td><td>Con trỏ hình búa trên máy tính</td><td>Trải nghiệm</td><td><span class="badge badge-muted">Tuỳ chọn</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" id="chi-tiet">
+      <h2>Mô tả chi tiết</h2>
+
+      <h3>F-01 · Màn hình bắt đầu</h3>
+      <ul>
+        <li>Hiển thị tên game "Đập Chuột", câu luật "Bấm trúng chuột để ghi điểm. Bạn có 30 giây!".</li>
+        <li>Hiển thị "Kỷ lục: N" nếu đã có kỷ lục lớn hơn 0; nếu chưa có thì ẩn dòng này.</li>
+        <li>Nút "Bắt đầu" → chuyển sang màn hình chơi và chạy F-02.</li>
+      </ul>
+
+      <h3>F-02 · Đếm ngược 3-2-1</h3>
+      <ul>
+        <li>Lớp phủ trên bàn chơi hiện lần lượt 3, 2, 1, mỗi số 1 giây.</li>
+        <li>Thanh trên hiển thị <code>Điểm: 0</code> và <code>⏱ 30s</code>, đồng hồ chưa chạy.</li>
+        <li>Không có chuột; bấm vào bàn không có tác dụng và không tính trượt.</li>
+        <li>Hết số 1 → lượt bắt đầu, đồng hồ chạy, con chuột đầu tiên xuất hiện ngay.</li>
+      </ul>
+
+      <h3>F-03 · Đồng hồ lượt 30 giây</h3>
+      <ul>
+        <li>Đếm ngược từ 30 về 0, hiển thị số giây làm tròn lên (29,2 giây còn lại → <code>30s</code>; 0,4 giây → <code>1s</code>).</li>
+        <li>Từ khi còn ≤ 5 giây hiển thị, chữ thời gian chuyển màu đỏ (<code>--color-danger</code>).</li>
+        <li>Thời gian tính theo đồng hồ thực của máy, trừ phần thời gian tạm dừng. Sai số cho phép ±0,5 giây.</li>
+      </ul>
+
+      <h3>F-04 · Chuột xuất hiện ngẫu nhiên</h3>
+      <ul>
+        <li>Mỗi lúc tối đa 1 chuột trên bàn.</li>
+        <li>Ô xuất hiện chọn ngẫu nhiên đều trong 8 ô còn lại, loại trừ ô vừa xuất hiện trước đó.</li>
+        <li>Thời gian ở trên mặt đất ngẫu nhiên đều trong khoảng 0,8–1,2 giây.</li>
+        <li>Chuột tự lặn → con tiếp theo xuất hiện sau khoảng nghỉ 0,3 giây.</li>
+      </ul>
+
+      <h3>F-05 · Đập trúng / đập trượt</h3>
+      <ul>
+        <li><strong>Trúng:</strong> bấm vào ô có chuột chưa bị đập → +1 điểm, đếm 1 cú trúng, chuột đổi sang hình "bị đập" và biến mất ngay; con tiếp theo sau 0,3 giây.</li>
+        <li><strong>Trượt:</strong> bấm vào ô trống trong lúc đang chơi → điểm không đổi, đếm 1 cú trượt.</li>
+        <li>Bấm thêm vào chuột đã bị đập (đang chạy hiệu ứng) → bỏ qua, không cộng điểm, không tính trượt.</li>
+        <li>Bấm ra ngoài bàn chơi (khoảng trống, thanh trên) → bỏ qua.</li>
+        <li>Phản hồi ngay khi chạm (dùng sự kiện <code>pointerdown</code>), không chờ nhả tay.</li>
+      </ul>
+
+      <h3>F-06 · Tính điểm và thống kê lượt</h3>
+      <ul>
+        <li>Điểm bắt đầu = 0, cập nhật ngay khi đập trúng.</li>
+        <li>Đếm số cú trúng và cú trượt; độ chính xác = trúng ÷ (trúng + trượt), làm tròn đến số nguyên phần trăm.</li>
+        <li>Lượt không có cú bấm nào → độ chính xác hiển thị "—".</li>
+      </ul>
+
+      <h3>F-07 · Tự động tạm dừng khi rời tab</h3>
+      <ul>
+        <li>Khi trang bị ẩn (chuyển tab, thu nhỏ, khoá màn hình) trong lúc đếm ngược hoặc đang chơi → vào trạng thái Tạm dừng.</li>
+        <li>Đồng hồ dừng; chuột đang trên bàn (nếu có) được rút xuống, không tính điểm, không tính trượt.</li>
+        <li>Quay lại trang → lớp phủ "Tạm dừng" với nút "Tiếp tục". Game không tự chạy tiếp.</li>
+        <li>Bấm "Tiếp tục" → chạy đếm ngược 3-2-1 lại từ đầu, rồi tiếp tục với thời gian còn lại và điểm đang có.</li>
+      </ul>
+
+      <h3>F-08 · Kết thúc lượt</h3>
+      <ul>
+        <li>Khi thời gian còn lại về 0: chuột đang trên bàn biến mất, không còn chuột mới, mọi cú bấm sau đó bị bỏ qua.</li>
+        <li>Huỷ toàn bộ bộ hẹn giờ của lượt (đồng hồ, xuất hiện, lặn) để lượt sau không bị chồng.</li>
+        <li>Cập nhật kỷ lục (F-10) rồi chuyển sang màn hình kết thúc.</li>
+      </ul>
+
+      <h3>F-09 · Màn hình kết thúc</h3>
+      <ul>
+        <li>Tiêu đề "Hết giờ!", điểm của lượt (cỡ lớn), kỷ lục hiện tại.</li>
+        <li>Nhãn "Kỷ lục mới!" nếu điểm lượt lớn hơn hẳn kỷ lục trước lượt.</li>
+        <li>Thống kê: Trúng, Trượt, Chính xác.</li>
+        <li>Hai nút: "Chơi lại" (chính) và "Về trang chủ" (phụ).</li>
+      </ul>
+
+      <h3>F-10 · Lưu kỷ lục</h3>
+      <ul>
+        <li>Lưu vào localStorage, còn sau khi tải lại trang.</li>
+        <li>Chỉ ghi khi điểm lượt lớn hơn kỷ lục cũ.</li>
+        <li>Không đọc/ghi được (ẩn danh, bị chặn) → game vẫn chạy, kỷ lục chỉ giữ trong phiên hiện tại. Chi tiết ở trang 04.</li>
+      </ul>
+
+      <h3>F-11 · Chơi lại / Về trang chủ</h3>
+      <ul>
+        <li>"Chơi lại" → điểm, số trúng, số trượt về 0; thời gian về 30 giây; chạy F-02.</li>
+        <li>"Về trang chủ" → về màn hình bắt đầu, hiển thị kỷ lục đã cập nhật.</li>
+        <li>Chơi nhiều lượt liên tiếp không được làm chuột xuất hiện dồn dập hay đồng hồ chạy nhanh hơn.</li>
+      </ul>
+
+      <h3>F-12 · Hiệu ứng</h3>
+      <ul>
+        <li>Chuột trồi lên và lặn xuống bằng chuyển động trượt dọc khoảng 150 ms.</li>
+        <li>Đập trúng: đổi hình chuột "bị đập" (mắt chữ X), ô nháy viền hồng, hiện "+1" bay lên rồi mờ dần (~400 ms).</li>
+        <li>Đập trượt: ô rung nhẹ hoặc nhấp nhẹ, không dùng màu đỏ để tránh gây cảm giác bị phạt.</li>
+        <li>Tôn trọng cài đặt giảm chuyển động của hệ thống (<code>prefers-reduced-motion</code>): bỏ chuyển động trượt, giữ đổi hình và "+1".</li>
+      </ul>
+
+      <h3>F-13 · Con trỏ hình búa</h3>
+      <ul>
+        <li>Trên thiết bị có chuột, con trỏ trên bàn chơi là hình búa (SVG). Không áp dụng cho màn hình cảm ứng.</li>
+      </ul>
+    </section>
+
+    <nav class="pager" aria-label="Chuyển trang">
+      <a href="01-tong-quan.html"><small>← Trước</small>01 · Tổng quan</a>
+      <a class="next" href="03-man-hinh.html"><small>Tiếp →</small>03 · Màn hình</a>
+    </nav>
+  </main>
+</div>
+</body>
+</html>

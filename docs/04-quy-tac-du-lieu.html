@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quy tắc và dữ liệu — Đập Chuột</title>
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><span class="brand-mark"><svg width="20" height="20" viewBox="0 0 64 56" aria-hidden="true"><circle cx="14" cy="14" r="11" fill="#fff"/><circle cx="50" cy="14" r="11" fill="#fff"/><ellipse cx="32" cy="34" rx="22" ry="20" fill="#fff"/></svg></span>Đập Chuột · Tài liệu</a>
+    <span class="meta">Phiên bản 1.0</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidenav" aria-label="Mục lục tài liệu">
+    <div class="sidenav-title">Tài liệu</div>
+    <a href="index.html"><span class="num">·</span>Mục lục</a>
+    <a href="01-tong-quan.html"><span class="num">01</span>Tổng quan</a>
+    <a href="02-chuc-nang.html"><span class="num">02</span>Chức năng</a>
+    <a href="03-man-hinh.html"><span class="num">03</span>Màn hình</a>
+    <a href="04-quy-tac-du-lieu.html" aria-current="page"><span class="num">04</span>Quy tắc &amp; dữ liệu</a>
+    <a href="05-ke-hoach-test.html"><span class="num">05</span>Kế hoạch test</a>
+  </nav>
+
+  <main>
+    <div class="page-head">
+      <span class="eyebrow">04 · Quy tắc &amp; dữ liệu</span>
+      <h1>Quy tắc nghiệp vụ và dữ liệu</h1>
+      <p class="lead">Các con số, trạng thái và quy tắc mà phần code phải tuân theo. Mã <code>R-xx</code> dùng để đối chiếu với kế hoạch test.</p>
+    </div>
+
+    <section class="card" id="hang-so">
+      <h2>Hằng số cấu hình</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tên</th><th>Giá trị</th><th>Ý nghĩa</th></tr></thead>
+          <tbody>
+            <tr><td><code>ROUND_MS</code></td><td>30 000 ms</td><td>Thời lượng một lượt.</td></tr>
+            <tr><td><code>COUNTDOWN_STEPS</code></td><td>3 (mỗi bước 1 000 ms)</td><td>Đếm ngược trước lượt và sau khi tiếp tục.</td></tr>
+            <tr><td><code>UP_MIN_MS</code> / <code>UP_MAX_MS</code></td><td>800 / 1 200 ms</td><td>Khoảng thời gian chuột ở trên mặt đất.</td></tr>
+            <tr><td><code>GAP_MS</code></td><td>300 ms</td><td>Khoảng nghỉ trước khi con tiếp theo xuất hiện.</td></tr>
+            <tr><td><code>WARN_SECONDS</code></td><td>5</td><td>Từ mức này trở xuống, thời gian hiển thị màu đỏ.</td></tr>
+            <tr><td><code>HOLES</code></td><td>9 (lưới 3×3)</td><td>Số ô trên bàn chơi.</td></tr>
+            <tr><td><code>STORAGE_KEY</code></td><td><code>"dap-chuot.best"</code></td><td>Khoá localStorage chứa kỷ lục.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" id="trang-thai">
+      <h2>Máy trạng thái</h2>
+      <div class="flow">
+        <span class="node">START</span><span class="arrow">→</span>
+        <span class="node">COUNTDOWN</span><span class="arrow">→</span>
+        <span class="node">PLAYING</span><span class="arrow">→</span>
+        <span class="node">ENDED</span>
+      </div>
+      <div class="flow">
+        <span class="node">COUNTDOWN · PLAYING</span><span class="arrow">⇄</span><span class="node alt">PAUSED</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Từ</th><th>Sự kiện</th><th>Đến</th><th>Hành động</th></tr></thead>
+          <tbody>
+            <tr><td>START</td><td>Bấm "Bắt đầu"</td><td>COUNTDOWN</td><td>Khởi tạo lượt mới (điểm, trúng, trượt = 0; còn lại = 30 000 ms).</td></tr>
+            <tr><td>COUNTDOWN</td><td>Đếm xong 3 bước</td><td>PLAYING</td><td>Ghi mốc thời gian bắt đầu; cho chuột đầu tiên xuất hiện ngay.</td></tr>
+            <tr><td>PLAYING</td><td>Thời gian còn lại ≤ 0</td><td>ENDED</td><td>Huỷ mọi hẹn giờ, rút chuột, cập nhật kỷ lục.</td></tr>
+            <tr><td>COUNTDOWN / PLAYING</td><td>Trang bị ẩn (<code>visibilitychange</code> → <code>hidden</code>)</td><td>PAUSED</td><td>Chốt thời gian còn lại, dừng hẹn giờ, rút chuột (không tính điểm/trượt).</td></tr>
+            <tr><td>PAUSED</td><td>Bấm "Tiếp tục"</td><td>COUNTDOWN</td><td>Đếm lại 3-2-1, sau đó PLAYING với thời gian còn lại đã chốt.</td></tr>
+            <tr><td>ENDED</td><td>Bấm "Chơi lại"</td><td>COUNTDOWN</td><td>Khởi tạo lượt mới.</td></tr>
+            <tr><td>ENDED</td><td>Bấm "Về trang chủ"</td><td>START</td><td>Hiển thị kỷ lục mới nhất.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout"><p>Mỗi lần đổi trạng thái phải <strong>huỷ hết hẹn giờ của trạng thái cũ</strong>. Đây là nguyên nhân thường gặp của lỗi "chuột dồn dập" và "đồng hồ chạy nhanh gấp đôi" khi chơi lại.</p></div>
+    </section>
+
+    <section class="card" id="quy-tac">
+      <h2>Quy tắc</h2>
+      <h3>Thời gian</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Quy tắc</th></tr></thead>
+          <tbody>
+            <tr><td class="id">R-01</td><td>Thời gian còn lại = <code>remainingAtStart − (now − startedAt)</code>, dùng <code>performance.now()</code>. Không cộng dồn theo số lần gọi hẹn giờ (vì hẹn giờ có thể trễ).</td></tr>
+            <tr><td class="id">R-02</td><td>Số giây hiển thị = <code>ceil(còn lại / 1000)</code>, không âm. Màu đỏ khi số hiển thị ≤ 5.</td></tr>
+            <tr><td class="id">R-03</td><td>Khi tạm dừng, <code>remainingAtStart</code> được gán bằng thời gian còn lại tại lúc dừng. Thời gian tạm dừng và đếm ngược không bị trừ.</td></tr>
+            <tr><td class="id">R-04</td><td>Tổng thời gian ở trạng thái PLAYING của một lượt = 30 ± 0,5 giây.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Chuột</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Quy tắc</th></tr></thead>
+          <tbody>
+            <tr><td class="id">R-05</td><td>Mỗi thời điểm có tối đa 1 chuột đang hiện (kể cả lúc đang chạy hiệu ứng "bị đập").</td></tr>
+            <tr><td class="id">R-06</td><td>Ô mới chọn ngẫu nhiên đều trong các ô khác ô trước đó (8 lựa chọn). Con đầu tiên của lượt: chọn trong cả 9 ô.</td></tr>
+            <tr><td class="id">R-07</td><td>Thời gian hiện chọn ngẫu nhiên đều trong [800, 1200] ms cho từng con.</td></tr>
+            <tr><td class="id">R-08</td><td>Sau khi chuột bị đập hoặc tự lặn, con tiếp theo xuất hiện sau 300 ms (nếu lượt vẫn còn).</td></tr>
+            <tr><td class="id">R-09</td><td>Không cho chuột mới xuất hiện nếu thời gian còn lại ≤ 0 hoặc trạng thái không phải PLAYING.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Điểm và thống kê</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Quy tắc</th></tr></thead>
+          <tbody>
+            <tr><td class="id">R-10</td><td>Chỉ ghi nhận cú bấm khi trạng thái là PLAYING.</td></tr>
+            <tr><td class="id">R-11</td><td>Bấm vào ô có chuột ở trạng thái "đang hiện" → <code>score += 1</code>, <code>hits += 1</code>, chuột chuyển sang "bị đập". Mỗi chuột chỉ cộng một lần.</td></tr>
+            <tr><td class="id">R-12</td><td>Bấm vào ô không có chuột → <code>misses += 1</code>, điểm không đổi.</td></tr>
+            <tr><td class="id">R-13</td><td>Bấm vào chuột đã bị đập hoặc đang lặn xuống → bỏ qua hoàn toàn.</td></tr>
+            <tr><td class="id">R-14</td><td>Chuột tự lặn không ảnh hưởng điểm, trúng hay trượt.</td></tr>
+            <tr><td class="id">R-15</td><td>Độ chính xác = <code>round(hits / (hits + misses) × 100)</code> %. Nếu <code>hits + misses = 0</code> → hiển thị "—".</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Kỷ lục</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Quy tắc</th></tr></thead>
+          <tbody>
+            <tr><td class="id">R-16</td><td>Khi kết thúc lượt: nếu <code>score &gt; best</code> → <code>best = score</code>, ghi localStorage, <code>isNewBest = true</code>. Ngược lại <code>isNewBest = false</code>.</td></tr>
+            <tr><td class="id">R-17</td><td>Bằng kỷ lục không tính là kỷ lục mới. Chưa có kỷ lục thì <code>best = 0</code>, nên lượt đầu được 0 điểm không báo kỷ lục mới.</td></tr>
+            <tr><td class="id">R-18</td><td>Màn hình bắt đầu chỉ hiện dòng kỷ lục khi <code>best &gt; 0</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" id="du-lieu">
+      <h2>Mô hình dữ liệu</h2>
+      <h3>Trạng thái trong bộ nhớ (một lượt)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Trường</th><th>Kiểu</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>phase</code></td><td>chuỗi</td><td><code>START</code> | <code>COUNTDOWN</code> | <code>PLAYING</code> | <code>PAUSED</code> | <code>ENDED</code></td></tr>
+            <tr><td><code>score</code></td><td>số nguyên ≥ 0</td><td>Điểm lượt hiện tại.</td></tr>
+            <tr><td><code>hits</code>, <code>misses</code></td><td>số nguyên ≥ 0</td><td>Số cú trúng, trượt.</td></tr>
+            <tr><td><code>remainingMs</code></td><td>số</td><td>Thời gian còn lại đã chốt (lúc bắt đầu hoặc lúc tạm dừng).</td></tr>
+            <tr><td><code>startedAt</code></td><td>số</td><td>Mốc <code>performance.now()</code> khi vào PLAYING gần nhất.</td></tr>
+            <tr><td><code>activeHole</code></td><td>0–8 hoặc <code>null</code></td><td>Ô đang có chuột.</td></tr>
+            <tr><td><code>moleState</code></td><td>chuỗi</td><td><code>none</code> | <code>up</code> | <code>hit</code> | <code>down</code></td></tr>
+            <tr><td><code>lastHole</code></td><td>0–8 hoặc <code>null</code></td><td>Ô của con chuột trước, để tránh lặp.</td></tr>
+            <tr><td><code>best</code></td><td>số nguyên ≥ 0</td><td>Kỷ lục (đọc từ localStorage khi tải trang).</td></tr>
+            <tr><td><code>isNewBest</code></td><td>boolean</td><td>Lượt vừa xong có phá kỷ lục không.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Lưu trữ trên trình duyệt</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Khoá</th><th>Giá trị</th><th>Ví dụ</th></tr></thead>
+          <tbody>
+            <tr><td><code>dap-chuot.best</code></td><td>Chuỗi số nguyên không âm</td><td><code>"27"</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>Đọc:</strong> bọc trong <code>try/catch</code>. Giá trị không phải số nguyên không âm (rỗng, chữ, số âm, số thập phân) → coi như 0.</li>
+        <li><strong>Ghi:</strong> bọc trong <code>try/catch</code>. Lỗi khi ghi (ẩn danh, hết dung lượng, bị chặn) → bỏ qua lỗi, vẫn giữ <code>best</code> trong bộ nhớ cho đến khi tải lại trang.</li>
+        <li>Không lưu dữ liệu nào khác, không gửi dữ liệu ra ngoài.</li>
+      </ul>
+    </section>
+
+    <section class="card" id="bien">
+      <h2>Tình huống biên</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tình huống</th><th>Xử lý</th></tr></thead>
+          <tbody>
+            <tr><td>Bấm đúng lúc đồng hồ về 0</td><td>Kiểm tra trạng thái trước khi tính: nếu đã ENDED (hoặc còn lại ≤ 0) thì không tính.</td></tr>
+            <tr><td>Bấm vào chuột đúng lúc nó bắt đầu lặn</td><td>Chuột ở trạng thái <code>down</code> không đập được; cú bấm bị bỏ qua (không tính trượt).</td></tr>
+            <tr><td>Chạm nhiều ngón cùng lúc</td><td>Mỗi cú chạm xử lý độc lập theo ô mà nó chạm vào.</td></tr>
+            <tr><td>Bấm nhanh "Chơi lại" nhiều lần</td><td>Nút bị vô hiệu ngay sau lần bấm đầu; chỉ khởi tạo một lượt.</td></tr>
+            <tr><td>Rời tab trong lúc tạm dừng</td><td>Vẫn ở PAUSED, không đổi gì.</td></tr>
+            <tr><td>Rời tab ở màn hình bắt đầu / kết thúc</td><td>Không làm gì.</td></tr>
+            <tr><td>Tab bị trình duyệt làm chậm hẹn giờ</td><td>Không ảnh hưởng vì thời gian tính theo R-01; trang ẩn cũng đã chuyển PAUSED.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <nav class="pager" aria-label="Chuyển trang">
+      <a href="03-man-hinh.html"><small>← Trước</small>03 · Màn hình</a>
+      <a class="next" href="05-ke-hoach-test.html"><small>Tiếp →</small>05 · Kế hoạch test</a>
+    </nav>
+  </main>
+</div>
+</body>
+</html>

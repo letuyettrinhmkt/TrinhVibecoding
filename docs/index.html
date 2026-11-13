@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tài liệu Đập Chuột</title>
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><span class="brand-mark"><svg width="20" height="20" viewBox="0 0 64 56" aria-hidden="true"><circle cx="14" cy="14" r="11" fill="#fff"/><circle cx="50" cy="14" r="11" fill="#fff"/><ellipse cx="32" cy="34" rx="22" ry="20" fill="#fff"/></svg></span>Đập Chuột · Tài liệu</a>
+    <span class="meta">Phiên bản 1.0</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidenav" aria-label="Mục lục tài liệu">
+    <div class="sidenav-title">Tài liệu</div>
+    <a href="index.html" aria-current="page"><span class="num">·</span>Mục lục</a>
+    <a href="01-tong-quan.html"><span class="num">01</span>Tổng quan</a>
+    <a href="02-chuc-nang.html"><span class="num">02</span>Chức năng</a>
+    <a href="03-man-hinh.html"><span class="num">03</span>Màn hình</a>
+    <a href="04-quy-tac-du-lieu.html"><span class="num">04</span>Quy tắc &amp; dữ liệu</a>
+    <a href="05-ke-hoach-test.html"><span class="num">05</span>Kế hoạch test</a>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Tài liệu thiết kế game</span>
+        <h1>Đập Chuột</h1>
+        <p class="lead">Mini game phản xạ trên trình duyệt: 30 giây, lưới 3×3, đập trúng càng nhiều chuột càng tốt.</p>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg width="140" height="122" viewBox="0 0 64 56">
+          <circle cx="13" cy="15" r="11" fill="#FCDDEF"/><circle cx="13" cy="15" r="6" fill="#FE68C6"/>
+          <circle cx="51" cy="15" r="11" fill="#FCDDEF"/><circle cx="51" cy="15" r="6" fill="#FE68C6"/>
+          <ellipse cx="32" cy="34" rx="21" ry="20" fill="#FFFFFF"/>
+          <circle cx="24" cy="31" r="3" fill="#1C171A"/><circle cx="40" cy="31" r="3" fill="#1C171A"/>
+          <ellipse cx="32" cy="41" rx="4" ry="3" fill="#D42A87"/>
+        </svg>
+      </div>
+    </section>
+
+    <div class="toc">
+      <a href="01-tong-quan.html">
+        <span class="toc-num">01</span>
+        <span class="toc-title">Tổng quan</span>
+        <span class="toc-desc">Mục tiêu, người dùng, phạm vi, thuật ngữ và 5 quyết định đã chốt khi phỏng vấn.</span>
+        <span class="toc-go">Đọc →</span>
+      </a>
+      <a href="02-chuc-nang.html">
+        <span class="toc-num">02</span>
+        <span class="toc-title">Chức năng</span>
+        <span class="toc-desc">13 chức năng F-01 → F-13: đếm ngược, đồng hồ, chuột, đập, tạm dừng, kỷ lục, chơi lại.</span>
+        <span class="toc-go">Đọc →</span>
+      </a>
+      <a href="03-man-hinh.html">
+        <span class="toc-num">03</span>
+        <span class="toc-title">Màn hình</span>
+        <span class="toc-desc">Luồng màn hình, wireframe khổ điện thoại, đặc tả thành phần theo token, chuyển động.</span>
+        <span class="toc-go">Đọc →</span>
+      </a>
+      <a href="04-quy-tac-du-lieu.html">
+        <span class="toc-num">04</span>
+        <span class="toc-title">Quy tắc &amp; dữ liệu</span>
+        <span class="toc-desc">Hằng số, máy trạng thái, quy tắc R-01 → R-18, mô hình dữ liệu, localStorage, tình huống biên.</span>
+        <span class="toc-go">Đọc →</span>
+      </a>
+      <a href="05-ke-hoach-test.html">
+        <span class="toc-num">05</span>
+        <span class="toc-title">Kế hoạch test</span>
+        <span class="toc-desc">29 ca test chức năng, 9 ca giao diện, cách đo đồng hồ và tiêu chí hoàn thành.</span>
+        <span class="toc-go">Đọc →</span>
+      </a>
+    </div>
+
+    <section class="card" style="margin-top: var(--space-8)">
+      <h2>Tóm tắt nhanh</h2>
+      <div class="grid">
+        <div class="tile"><div class="tile-label">Luật</div><p>Đập trúng +1, trượt 0, mỗi chuột tính một lần.</p></div>
+        <div class="tile"><div class="tile-label">Mới sau phỏng vấn</div><p>Đếm ngược 3-2-1, tự tạm dừng khi rời tab, thống kê chính xác, nút "Về trang chủ".</p></div>
+        <div class="tile"><div class="tile-label">Hình ảnh</div><p>Chuột SVG tông hồng, theo <code>design/tokens.css</code>.</p></div>
+        <div class="tile"><div class="tile-label">Kỹ thuật</div><p>HTML + CSS + JS thuần, chạy offline, responsive từ 360 px.</p></div>
+      </div>
+    </section>
+
+    <p class="foot">Nguồn yêu cầu: <code>YEU-CAU.md</code>. Bộ tài liệu này chưa bao gồm code game.</p>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tổng quan — Đập Chuột</title>
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><span class="brand-mark"><svg width="20" height="20" viewBox="0 0 64 56" aria-hidden="true"><circle cx="14" cy="14" r="11" fill="#fff"/><circle cx="50" cy="14" r="11" fill="#fff"/><ellipse cx="32" cy="34" rx="22" ry="20" fill="#fff"/></svg></span>Đập Chuột · Tài liệu</a>
+    <span class="meta">Phiên bản 1.0</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidenav" aria-label="Mục lục tài liệu">
+    <div class="sidenav-title">Tài liệu</div>
+    <a href="index.html"><span class="num">·</span>Mục lục</a>
+    <a href="01-tong-quan.html" aria-current="page"><span class="num">01</span>Tổng quan</a>
+    <a href="02-chuc-nang.html"><span class="num">02</span>Chức năng</a>
+    <a href="03-man-hinh.html"><span class="num">03</span>Màn hình</a>
+    <a href="04-quy-tac-du-lieu.html"><span class="num">04</span>Quy tắc &amp; dữ liệu</a>
+    <a href="05-ke-hoach-test.html"><span class="num">05</span>Kế hoạch test</a>
+  </nav>
+
+  <main>
+    <div class="page-head">
+      <span class="eyebrow">01 · Tổng quan</span>
+      <h1>Tổng quan sản phẩm</h1>
+      <p class="lead">"Đập Chuột" là mini game phản xạ, một người chơi, chạy trên trình duyệt. Người chơi có 30 giây để đập trúng càng nhiều chuột càng tốt.</p>
+    </div>
+
+    <section class="card" id="tom-tat">
+      <h2>Tóm tắt</h2>
+      <div class="grid">
+        <div class="tile"><div class="tile-label">Thể loại</div><div class="tile-value">Phản xạ</div><p>Một người chơi, lượt ngắn, chơi lại nhanh.</p></div>
+        <div class="tile"><div class="tile-label">Thời lượng một lượt</div><div class="tile-value">30 giây</div><p>Có thêm 3 giây đếm ngược chuẩn bị, không tính vào lượt.</p></div>
+        <div class="tile"><div class="tile-label">Bàn chơi</div><div class="tile-value">3 × 3</div><p>9 lỗ, mỗi lúc tối đa 1 chuột.</p></div>
+        <div class="tile"><div class="tile-label">Nền tảng</div><div class="tile-value">Web</div><p>Máy tính và điện thoại, mở file là chơi, không cần mạng hay server.</p></div>
+      </div>
+    </section>
+
+    <section class="card" id="muc-tieu">
+      <h2>Mục tiêu</h2>
+      <h3>Với người chơi</h3>
+      <ul>
+        <li>Chơi được ngay, không cần hướng dẫn dài: luật gói trong một câu.</li>
+        <li>Mỗi lượt ngắn, có kỷ lục để muốn chơi lại và vượt qua chính mình.</li>
+        <li>Có phản hồi rõ khi đập trúng, có thống kê độ chính xác sau mỗi lượt.</li>
+      </ul>
+      <h3>Với sản phẩm</h3>
+      <ul>
+        <li>Chỉ dùng HTML + CSS + JavaScript thuần, không thư viện ngoài.</li>
+        <li>Giao diện theo design system tông hồng trong <code>design/tokens.css</code>.</li>
+        <li>Đồng hồ chính xác: một lượt kéo dài 30 ± 0,5 giây theo thời gian chơi thực.</li>
+      </ul>
+    </section>
+
+    <section class="card" id="nguoi-dung">
+      <h2>Người dùng và bối cảnh</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Bối cảnh</th><th>Thiết bị</th><th>Thao tác</th><th>Lưu ý thiết kế</th></tr></thead>
+          <tbody>
+            <tr><td>Giải trí ngắn trên điện thoại</td><td>Điện thoại, màn hình từ 360 px</td><td>Chạm</td><td>Ô tối thiểu 80×80 px, không phóng to khi chạm nhanh, không cuộn ngang.</td></tr>
+            <tr><td>Giải lao trên máy tính</td><td>Chrome, Edge, Firefox bản mới</td><td>Bấm chuột</td><td>Con trỏ có thể đổi thành hình búa (không bắt buộc).</td></tr>
+            <tr><td>Bị gián đoạn giữa lượt</td><td>Mọi thiết bị</td><td>Chuyển tab, khoá màn hình</td><td>Game tự tạm dừng, quay lại thì bấm "Tiếp tục".</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" id="quyet-dinh">
+      <h2>Các quyết định đã chốt khi phỏng vấn</h2>
+      <p>Những điểm sau bổ sung hoặc làm rõ <code>YEU-CAU.md</code>. Khi có mâu thuẫn, tài liệu này được ưu tiên.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Câu hỏi</th><th>Quyết định</th><th>Ảnh hưởng</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Rời tab hoặc khoá màn hình khi đang chơi</td><td><strong>Tự động tạm dừng</strong>; quay lại thấy lớp phủ "Tạm dừng" với nút "Tiếp tục".</td><td>Thêm trạng thái <code>PAUSED</code>. Đồng hồ không trừ thời gian khi tạm dừng.</td></tr>
+            <tr><td>2</td><td>Đếm ngược trước lượt</td><td><strong>Có đếm 3 → 2 → 1</strong>, khoảng 3 giây, không tính vào 30 giây.</td><td>Thêm trạng thái <code>COUNTDOWN</code>; bấm vào bàn lúc này không có tác dụng.</td></tr>
+            <tr><td>3</td><td>Phong cách hình ảnh</td><td><strong>Chuột và lỗ vẽ bằng SVG</strong>, tông hồng theo tokens.</td><td>Có 2 hình: chuột thường và chuột "bị đập". Hiển thị giống nhau trên mọi máy.</td></tr>
+            <tr><td>4</td><td>Khi nào báo "Kỷ lục mới!"</td><td><strong>Chỉ khi điểm lớn hơn hẳn</strong> kỷ lục cũ.</td><td>Bằng kỷ lục thì không báo. Lượt đầu tiên được 0 điểm thì không báo.</td></tr>
+            <tr><td>5</td><td>Màn hình kết thúc có thêm gì</td><td><strong>Thống kê độ chính xác</strong> (trúng, trượt, % chính xác) và nút <strong>"Về trang chủ"</strong>.</td><td>Phải đếm số cú trúng và trượt trong lượt.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" id="pham-vi">
+      <h2>Phạm vi</h2>
+      <div class="grid">
+        <div>
+          <h3><span class="badge badge-new">Trong phạm vi</span></h3>
+          <ul>
+            <li>3 màn hình: Bắt đầu, Chơi, Kết thúc.</li>
+            <li>Đếm ngược 3-2-1 và lớp phủ Tạm dừng.</li>
+            <li>Tính điểm, kỷ lục lưu trên trình duyệt (localStorage).</li>
+            <li>Thống kê trúng, trượt, độ chính xác của lượt.</li>
+            <li>Hiệu ứng trồi/lặn, phản hồi khi đập trúng.</li>
+            <li>Responsive từ 360 px.</li>
+          </ul>
+        </div>
+        <div>
+          <h3><span class="badge badge-muted">Ngoài phạm vi</span></h3>
+          <ul>
+            <li>Âm thanh, nhạc nền.</li>
+            <li>Nhiều cấp độ, tăng tốc theo thời gian.</li>
+            <li>Nhiều chuột cùng lúc, chuột đặc biệt.</li>
+            <li>Bảng xếp hạng online, đăng nhập.</li>
+            <li>Nút tạm dừng thủ công, nút xoá kỷ lục.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="thuat-ngu">
+      <h2>Thuật ngữ</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Thuật ngữ</th><th>Ý nghĩa</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Lượt</strong></td><td>Một lần chơi 30 giây, tính từ lúc hết đếm ngược đến khi đồng hồ về 0.</td></tr>
+            <tr><td><strong>Lỗ / ô</strong></td><td>Một trong 9 vị trí trên bàn chơi, đánh số 0–8 từ trái sang phải, trên xuống dưới.</td></tr>
+            <tr><td><strong>Đập trúng</strong></td><td>Bấm hoặc chạm vào ô đang có chuột chưa bị đập.</td></tr>
+            <tr><td><strong>Đập trượt</strong></td><td>Bấm hoặc chạm vào ô không có chuột trong lúc đang chơi.</td></tr>
+            <tr><td><strong>Chuột lặn</strong></td><td>Chuột tự rút xuống vì hết thời gian hiện, người chơi không bấm kịp.</td></tr>
+            <tr><td><strong>Kỷ lục</strong></td><td>Điểm cao nhất từng đạt được trên trình duyệt này.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <nav class="pager" aria-label="Chuyển trang">
+      <a href="index.html"><small>← Trước</small>Mục lục</a>
+      <a class="next" href="02-chuc-nang.html"><small>Tiếp →</small>02 · Chức năng</a>
+    </nav>
+    <p class="foot">Nguồn: YEU-CAU.md và buổi phỏng vấn làm rõ yêu cầu.</p>
+  </main>
+</div>
+</body>
+</html>
