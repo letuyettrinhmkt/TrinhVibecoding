@@ -1,0 +1,20 @@
+# Chỉ cần server/, app/, design/ trong image
+.git
+.gitignore
+.claude
+docs
+*.md
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+node_modules
+npm-debug.log*
+*.log
+.env
+.env.*
+
+.DS_Store
+Thumbs.db
+.vscode
+.idea
