@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đập Chuột</title>
+<link rel="stylesheet" href="../design/tokens.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- Hình chuột dùng chung cho 9 ô -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="mouse" viewBox="0 0 64 56">
+      <circle cx="13" cy="15" r="11" fill="#796B73"/><circle cx="13" cy="15" r="6" fill="#F9B9DD"/>
+      <circle cx="51" cy="15" r="11" fill="#796B73"/><circle cx="51" cy="15" r="6" fill="#F9B9DD"/>
+      <ellipse cx="32" cy="34" rx="21" ry="20" fill="#A69BA2"/>
+      <circle cx="24" cy="31" r="3" fill="#1C171A"/><circle cx="40" cy="31" r="3" fill="#1C171A"/>
+      <ellipse cx="32" cy="41" rx="4" ry="3" fill="#D42A87"/>
+    </symbol>
+    <symbol id="mouse-hit" viewBox="0 0 64 56">
+      <circle cx="13" cy="15" r="11" fill="#796B73"/><circle cx="13" cy="15" r="6" fill="#F9B9DD"/>
+      <circle cx="51" cy="15" r="11" fill="#796B73"/><circle cx="51" cy="15" r="6" fill="#F9B9DD"/>
+      <ellipse cx="32" cy="36" rx="22" ry="17" fill="#A69BA2"/>
+      <path d="M20 29l7 7M27 29l-7 7M37 29l7 7M44 29l-7 7" stroke="#1C171A" stroke-width="2.5" stroke-linecap="round"/>
+      <ellipse cx="32" cy="43" rx="4" ry="3" fill="#D42A87"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="app">
+
+  <!-- A. Màn hình bắt đầu -->
+  <section class="screen screen-start" id="screen-start" aria-labelledby="start-title">
+    <div class="start-body">
+      <svg class="start-mouse" viewBox="0 0 64 56" aria-hidden="true"><use href="#mouse"/></svg>
+      <h1 class="game-title" id="start-title">Đập Chuột</h1>
+      <p class="game-rule">Bấm trúng chuột để ghi điểm.<br>Bạn có 30 giây!</p>
+      <p class="record-pill" id="start-best" hidden>🏆 Kỷ lục: <span id="start-best-value">0</span></p>
+    </div>
+    <button class="btn btn-primary btn-block" id="btn-start" type="button">Bắt đầu</button>
+  </section>
+
+  <!-- B/C/D. Màn hình chơi (đếm ngược, đang chơi, tạm dừng) -->
+  <section class="screen screen-play" id="screen-play" hidden aria-label="Bàn chơi">
+    <div class="hud">
+      <span class="hud-score">Điểm: <span id="hud-score">0</span></span>
+      <span class="hud-time" id="hud-time-wrap">⏱ <span id="hud-time">30</span>s</span>
+    </div>
+
+    <div class="board-wrap">
+      <div class="board" id="board"></div>
+
+      <div class="overlay" id="overlay-countdown" hidden>
+        <span class="countdown-num" id="countdown-num">3</span>
+      </div>
+
+      <div class="overlay" id="overlay-paused" hidden role="dialog" aria-modal="true" aria-labelledby="paused-title">
+        <div class="paused-box">
+          <p class="paused-title" id="paused-title">Tạm dừng</p>
+          <p class="paused-info">Còn <span id="paused-time">30</span> giây · <span id="paused-score">0</span> điểm</p>
+          <button class="btn btn-primary" id="btn-resume" type="button">Tiếp tục</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="play-hint" id="play-hint">Chuẩn bị…</p>
+  </section>
+
+  <!-- E. Màn hình kết thúc -->
+  <section class="screen screen-end" id="screen-end" hidden aria-labelledby="end-title">
+    <h1 class="game-title end-title" id="end-title">Hết giờ!</h1>
+    <div class="result" aria-live="polite">
+      <p class="result-label">Điểm của bạn</p>
+      <p class="result-score" id="end-score">0</p>
+      <p class="badge-new" id="end-new-best" hidden>🎉 Kỷ lục mới!</p>
+      <p class="result-best">Kỷ lục: <span id="end-best">0</span></p>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="end-hits">0</b><span>Trúng</span></div>
+      <div class="stat"><b id="end-misses">0</b><span>Trượt</span></div>
+      <div class="stat"><b id="end-accuracy">—</b><span>Chính xác</span></div>
+    </div>
+    <div class="end-actions">
+      <button class="btn btn-primary btn-block" id="btn-replay" type="button">Chơi lại</button>
+      <button class="btn btn-outline btn-block" id="btn-home" type="button">Về trang chủ</button>
+    </div>
+  </section>
+
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
