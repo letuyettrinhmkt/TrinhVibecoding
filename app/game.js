@@ -12,6 +12,9 @@
   var WARN_SECONDS = 5;
   var HOLES = 9;
   var STORAGE_KEY = 'dap-chuot.best';
+  var SOUND_KEY = 'dap-chuot.sound';
+  var BLACK_CHANCE = 1 / 6;   // tỉ lệ mèo đen
+  var FLOAT_MS = 750;         // thời gian hiện "+1 Úi da!" / "−1 Nà ní!"
 
   var HIT_EFFECT_MS = 200;   // hình "bị đập" trước khi biến mất
   var END_BUTTON_LOCK_MS = 600; // tránh cú chạm cuối lượt rơi trúng nút "Chơi lại"
@@ -22,6 +25,8 @@
     score: 0,
     hits: 0,
     misses: 0,
+    blackHits: 0,
+    moleKind: 'pink',   // pink | black
     remainingMs: ROUND_MS,
     startedAt: 0,
     activeHole: null,
@@ -61,6 +66,8 @@
     endHits: $('end-hits'),
     endMisses: $('end-misses'),
     endAccuracy: $('end-accuracy'),
+    endBlack: $('end-black'),
+    btnSound: $('btn-sound'),
     btnReplay: $('btn-replay'),
     btnHome: $('btn-home')
   };
@@ -76,8 +83,10 @@
       hole.innerHTML =
         '<div class="pit"></div>' +
         '<div class="mole-clip"><div class="mole">' +
-        '<svg class="mole-normal" viewBox="0 0 64 56" aria-hidden="true"><use href="#mouse"/></svg>' +
-        '<svg class="mole-hit" viewBox="0 0 64 56" aria-hidden="true"><use href="#mouse-hit"/></svg>' +
+        '<svg class="mole-normal kind-pink" viewBox="0 0 64 56" aria-hidden="true"><use href="#cat"/></svg>' +
+        '<svg class="mole-hit kind-pink" viewBox="0 0 64 56" aria-hidden="true"><use href="#cat-hit"/></svg>' +
+        '<svg class="mole-normal kind-black" viewBox="0 0 64 56" aria-hidden="true"><use href="#bcat"/></svg>' +
+        '<svg class="mole-hit kind-black" viewBox="0 0 64 56" aria-hidden="true"><use href="#bcat-hit"/></svg>' +
         '</div></div>' +
         '<div class="lip"></div>';
       el.board.appendChild(hole);
@@ -167,6 +176,8 @@
     state.activeHole = i;
     state.lastHole = i;
     state.moleState = 'up';
+    state.moleKind = Math.random() < BLACK_CHANCE ? 'black' : 'pink';
+    holes[i].classList.toggle('is-black', state.moleKind === 'black');
     holes[i].classList.add('is-up');
     var upMs = UP_MIN_MS + Math.random() * (UP_MAX_MS - UP_MIN_MS);
     moleTimer = setTimeout(retreatMole, upMs);
@@ -227,18 +238,25 @@
 
   function whack(i) {
     if (moleTimer !== null) { clearTimeout(moleTimer); moleTimer = null; }
-    state.score += 1;
-    state.hits += 1;
+    var isBlack = state.moleKind === 'black';
+    if (isBlack) {
+      state.score -= 1;          // mèo đen: −1, cho phép điểm âm
+      state.blackHits += 1;
+    } else {
+      state.score += 1;
+      state.hits += 1;
+    }
     state.moleState = 'hit';
     renderScore();
 
     var hole = holes[i];
     hole.classList.add('is-hit');
     var plus = document.createElement('span');
-    plus.className = 'plus';
-    plus.textContent = '+1';
+    plus.className = 'plus' + (isBlack ? ' is-minus' : '');
+    plus.innerHTML = (isBlack ? '−1' : '+1') + '<small>' + (isBlack ? 'Nà ní!' : 'Úi da!') + '</small>';
     hole.appendChild(plus);
-    schedule(function () { plus.remove(); }, 450);
+    schedule(function () { plus.remove(); }, FLOAT_MS + 50);
+    say(isBlack ? 'Nà ní' : 'Úi da');
 
     schedule(function () {
       if (state.activeHole !== i || state.moleState !== 'hit') return;
@@ -250,6 +268,57 @@
     moleTimer = setTimeout(spawnMole, GAP_MS);  // R-08
   }
 
+  // ---------- Giọng đọc "Úi da" / "Nà ní" ----------
+  // Dùng giọng đọc tiếng Việt có sẵn trên máy (ưu tiên giọng nữ).
+  // Máy không có giọng Việt thì im lặng (tránh giọng tiếng Anh đọc sai), chữ "+1 Úi da!" vẫn hiện.
+  var hasSpeech = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+  var soundOn = readSound();
+  var viVoice = null;
+
+  function readSound() {
+    try { return window.localStorage.getItem(SOUND_KEY) !== 'off'; } catch (e) { return true; }
+  }
+
+  function pickVoice() {
+    if (!hasSpeech) return;
+    var voices = window.speechSynthesis.getVoices();
+    var vi = voices.filter(function (v) { return /^vi(-|_|$)/i.test(v.lang); });
+    // Ưu tiên giọng nữ nếu có (HoaiMy, Linh, …)
+    var female = vi.filter(function (v) { return /hoaimy|hoài my|linh|female|nữ/i.test(v.name); });
+    viVoice = female[0] || vi[0] || null;
+  }
+
+  function say(text) {
+    if (!soundOn || !hasSpeech || !viVoice) return;
+    try {
+      window.speechSynthesis.cancel(); // đập liên tục thì câu mới thay câu cũ
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'vi-VN';
+      if (viVoice) u.voice = viVoice;
+      u.rate = 1.15;
+      u.pitch = 1.3;
+      window.speechSynthesis.speak(u);
+    } catch (e) { /* trình duyệt không hỗ trợ: chỉ hiện chữ */ }
+  }
+
+  function renderSound() {
+    el.btnSound.textContent = soundOn ? '🔊' : '🔇';
+    el.btnSound.setAttribute('aria-pressed', String(soundOn));
+    el.btnSound.setAttribute('aria-label', soundOn ? 'Tắt tiếng' : 'Bật tiếng');
+  }
+
+  function toggleSound() {
+    soundOn = !soundOn;
+    try { window.localStorage.setItem(SOUND_KEY, soundOn ? 'on' : 'off'); } catch (e) { /* bỏ qua */ }
+    if (!soundOn) stopSpeech();
+    renderSound();
+  }
+
+  function stopSpeech() {
+    if (!hasSpeech) return;
+    try { window.speechSynthesis.cancel(); } catch (e) { /* bỏ qua */ }
+  }
+
   // ---------- Vòng đời lượt ----------
   function startRound() {
     if (state.phase !== 'START' && state.phase !== 'ENDED') return; // chống bấm 2 lần
@@ -258,6 +327,7 @@
     state.score = 0;
     state.hits = 0;
     state.misses = 0;
+    state.blackHits = 0;
     state.remainingMs = ROUND_MS;
     state.lastHole = null;
     state.isNewBest = false;
@@ -311,6 +381,7 @@
     if (state.phase === 'PLAYING') state.remainingMs = getRemaining(); // R-03
     state.phase = 'PAUSED';
     clearTimers();
+    stopSpeech();
     clearBoard(); // chuột đang hiện bị rút, không tính điểm/trượt
     renderTime(state.remainingMs);
     el.overlayCountdown.hidden = true;
@@ -330,6 +401,7 @@
     state.phase = 'ENDED';
     state.remainingMs = 0;
     clearTimers();
+    stopSpeech();
     clearBoard();
     renderTime(0);
 
@@ -359,7 +431,9 @@
     el.endBest.textContent = String(state.best);
     el.endHits.textContent = String(state.hits);
     el.endMisses.textContent = String(state.misses);
-    var total = state.hits + state.misses;
+    el.endBlack.textContent = String(state.blackHits);
+    // Chính xác = mèo hồng trúng ÷ mọi cú bấm được tính (hồng + trượt + mèo đen)
+    var total = state.hits + state.misses + state.blackHits;
     el.endAccuracy.textContent = total === 0 ? '—' : Math.round(state.hits / total * 100) + '%'; // R-15
   }
 
@@ -383,6 +457,13 @@
     el.btnReplay.addEventListener('click', startRound);
     el.btnHome.addEventListener('click', goHome);
     el.btnResume.addEventListener('click', resumeGame);
+
+    renderSound();
+    el.btnSound.addEventListener('click', toggleSound);
+    if (hasSpeech) {
+      pickVoice();
+      window.speechSynthesis.addEventListener('voiceschanged', pickVoice);
+    }
 
     el.board.addEventListener('pointerdown', onBoardPointerDown);
     el.board.addEventListener('contextmenu', function (e) { e.preventDefault(); });

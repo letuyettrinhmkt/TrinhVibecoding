@@ -8,34 +8,118 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<!-- Hình chuột dùng chung cho 9 ô -->
+<!-- Hình mèo hồng dùng chung cho màn hình bắt đầu và 9 ô -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
-    <symbol id="mouse" viewBox="0 0 64 56">
-      <circle cx="13" cy="15" r="11" fill="#796B73"/><circle cx="13" cy="15" r="6" fill="#F9B9DD"/>
-      <circle cx="51" cy="15" r="11" fill="#796B73"/><circle cx="51" cy="15" r="6" fill="#F9B9DD"/>
-      <ellipse cx="32" cy="34" rx="21" ry="20" fill="#A69BA2"/>
-      <circle cx="24" cy="31" r="3" fill="#1C171A"/><circle cx="40" cy="31" r="3" fill="#1C171A"/>
-      <ellipse cx="32" cy="41" rx="4" ry="3" fill="#D42A87"/>
+    <!-- Khối 3D: sáng ở góc trên trái, đậm dần ra mép -->
+    <radialGradient id="cat-fur" cx="38%" cy="32%" r="72%">
+      <stop offset="0" stop-color="#FFF0F8"/>
+      <stop offset=".55" stop-color="#F9B9DD"/>
+      <stop offset="1" stop-color="#E77DBA"/>
+    </radialGradient>
+    <linearGradient id="cat-ear-in" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FE68C6"/>
+      <stop offset="1" stop-color="#FCDDEF"/>
+    </linearGradient>
+    <radialGradient id="cat-eye" cx="40%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#5A3550"/>
+      <stop offset="1" stop-color="#1C171A"/>
+    </radialGradient>
+
+    <!-- Phần dùng chung: tai, đầu, má, ria, nơ -->
+    <g id="cat-base">
+      <ellipse cx="32" cy="53" rx="20" ry="2.5" fill="#A50064" opacity=".12"/>
+      <path d="M9 27 L13 5 L29 16 Z M55 27 L51 5 L35 16 Z" fill="url(#cat-fur)" stroke="#E77DBA" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M14 21 L16 10 L24 16 Z M50 21 L48 10 L40 16 Z" fill="url(#cat-ear-in)" stroke-linejoin="round"/>
+      <ellipse cx="32" cy="33" rx="25" ry="20" fill="url(#cat-fur)"/>
+      <ellipse cx="22" cy="21" rx="9" ry="4" fill="#FFFFFF" opacity=".55" transform="rotate(-18 22 21)"/>
+      <ellipse cx="15.5" cy="40" rx="4.5" ry="2.8" fill="#FE68C6" opacity=".45"/>
+      <ellipse cx="48.5" cy="40" rx="4.5" ry="2.8" fill="#FE68C6" opacity=".45"/>
+      <path d="M5 36 L15 37.5 M5 41.5 L15 40.5 M59 36 L49 37.5 M59 41.5 L49 40.5" stroke="#A50064" stroke-width=".9" stroke-linecap="round" opacity=".45"/>
+      <g transform="translate(47 13) rotate(18)">
+        <path d="M0 0 L-7 -4.5 L-7 4.5 Z M0 0 L7 -4.5 L7 4.5 Z" fill="#D42A87" stroke="#D42A87" stroke-width="2" stroke-linejoin="round"/>
+        <circle r="2.4" fill="#EB2F96"/>
+        <circle cx="-.7" cy="-.7" r=".8" fill="#FFFFFF" opacity=".7"/>
+      </g>
+      <path d="M30.2 37.2 h3.6 l-1.8 2.3 Z" fill="#D42A87" stroke="#D42A87" stroke-width="1" stroke-linejoin="round"/>
+    </g>
+
+    <symbol id="cat" viewBox="0 0 64 56">
+      <use href="#cat-base"/>
+      <ellipse cx="22.5" cy="32" rx="4" ry="4.8" fill="url(#cat-eye)"/>
+      <ellipse cx="41.5" cy="32" rx="4" ry="4.8" fill="url(#cat-eye)"/>
+      <circle cx="24" cy="30.2" r="1.6" fill="#FFFFFF"/><circle cx="21.6" cy="34" r=".8" fill="#FFFFFF"/>
+      <circle cx="43" cy="30.2" r="1.6" fill="#FFFFFF"/><circle cx="40.6" cy="34" r=".8" fill="#FFFFFF"/>
+      <path d="M32 39.5 q-1.8 3 -4.5 1.6 M32 39.5 q1.8 3 4.5 1.6" fill="none" stroke="#7A004A" stroke-width="1.2" stroke-linecap="round"/>
     </symbol>
-    <symbol id="mouse-hit" viewBox="0 0 64 56">
-      <circle cx="13" cy="15" r="11" fill="#796B73"/><circle cx="13" cy="15" r="6" fill="#F9B9DD"/>
-      <circle cx="51" cy="15" r="11" fill="#796B73"/><circle cx="51" cy="15" r="6" fill="#F9B9DD"/>
-      <ellipse cx="32" cy="36" rx="22" ry="17" fill="#A69BA2"/>
-      <path d="M20 29l7 7M27 29l-7 7M37 29l7 7M44 29l-7 7" stroke="#1C171A" stroke-width="2.5" stroke-linecap="round"/>
-      <ellipse cx="32" cy="43" rx="4" ry="3" fill="#D42A87"/>
+
+    <symbol id="cat-hit" viewBox="0 0 64 56">
+      <use href="#cat-base"/>
+      <path d="M19 29.5 l6 2.7 l-6 2.7 M45 29.5 l-6 2.7 l6 2.7" fill="none" stroke="#2A1E25" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="32" cy="42.5" rx="2.6" ry="2.2" fill="#7A004A"/>
+      <path d="M8 9 l1.2 2.6 2.6 1.2 -2.6 1.2 -1.2 2.6 -1.2 -2.6 -2.6 -1.2 2.6 -1.2 Z" fill="#FFD24D"/>
+      <path d="M32 2 l1 2.2 2.2 1 -2.2 1 -1 2.2 -1 -2.2 -2.2 -1 2.2 -1 Z" fill="#FFD24D"/>
+      <path d="M58 22 l.9 2 2 .9 -2 .9 -.9 2 -.9 -2 -2 -.9 2 -.9 Z" fill="#FFD24D"/>
+    </symbol>
+
+    <!-- Mèo đen: đập trúng bị trừ điểm -->
+    <radialGradient id="bcat-fur" cx="38%" cy="30%" r="75%">
+      <stop offset="0" stop-color="#6A5D66"/>
+      <stop offset=".5" stop-color="#3A3138"/>
+      <stop offset="1" stop-color="#1C171A"/>
+    </radialGradient>
+    <radialGradient id="bcat-eye" cx="40%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#FFF3A6"/>
+      <stop offset="1" stop-color="#F2B300"/>
+    </radialGradient>
+    <g id="bcat-base">
+      <ellipse cx="32" cy="53" rx="20" ry="2.5" fill="#1C171A" opacity=".18"/>
+      <path d="M9 27 L13 5 L29 16 Z M55 27 L51 5 L35 16 Z" fill="url(#bcat-fur)" stroke="#2A2228" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M14 21 L16 10 L24 16 Z M50 21 L48 10 L40 16 Z" fill="url(#cat-ear-in)" opacity=".85" stroke-linejoin="round"/>
+      <ellipse cx="32" cy="33" rx="25" ry="20" fill="url(#bcat-fur)"/>
+      <ellipse cx="22" cy="21" rx="9" ry="4" fill="#FFFFFF" opacity=".2" transform="rotate(-18 22 21)"/>
+      <ellipse cx="15.5" cy="40" rx="4.5" ry="2.8" fill="#FE68C6" opacity=".3"/>
+      <ellipse cx="48.5" cy="40" rx="4.5" ry="2.8" fill="#FE68C6" opacity=".3"/>
+      <path d="M5 36 L15 37.5 M5 41.5 L15 40.5 M59 36 L49 37.5 M59 41.5 L49 40.5" stroke="#E7E4E6" stroke-width=".9" stroke-linecap="round" opacity=".6"/>
+      <path d="M30.2 37.2 h3.6 l-1.8 2.3 Z" fill="#FE68C6" stroke="#FE68C6" stroke-width="1" stroke-linejoin="round"/>
+    </g>
+
+    <symbol id="bcat" viewBox="0 0 64 56">
+      <use href="#bcat-base"/>
+      <ellipse cx="22.5" cy="32" rx="4.2" ry="4.8" fill="url(#bcat-eye)"/>
+      <ellipse cx="41.5" cy="32" rx="4.2" ry="4.8" fill="url(#bcat-eye)"/>
+      <ellipse cx="22.5" cy="32" rx="1.3" ry="3.8" fill="#1C171A"/>
+      <ellipse cx="41.5" cy="32" rx="1.3" ry="3.8" fill="#1C171A"/>
+      <circle cx="23.8" cy="30" r="1" fill="#FFFFFF"/><circle cx="42.8" cy="30" r="1" fill="#FFFFFF"/>
+      <path d="M17.5 25.5 l7 1.8 M46.5 25.5 l-7 1.8" stroke="#F9B9DD" stroke-width="1.3" stroke-linecap="round"/>
+      <path d="M32 39.5 q-1.8 2.6 -4.5 1.4 M32 39.5 q2.2 3.2 5.5 .8" fill="none" stroke="#F9B9DD" stroke-width="1.2" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="bcat-hit" viewBox="0 0 64 56">
+      <use href="#bcat-base"/>
+      <path d="M19 29.5 l6 2.7 l-6 2.7 M45 29.5 l-6 2.7 l6 2.7" fill="none" stroke="#FFF3A6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="32" cy="42.5" rx="2.6" ry="2.2" fill="#FE68C6"/>
+      <path d="M8 9 l1.2 2.6 2.6 1.2 -2.6 1.2 -1.2 2.6 -1.2 -2.6 -2.6 -1.2 2.6 -1.2 Z" fill="#FFD24D"/>
+      <path d="M32 2 l1 2.2 2.2 1 -2.2 1 -1 2.2 -1 -2.2 -2.2 -1 2.2 -1 Z" fill="#FFD24D"/>
+      <path d="M58 22 l.9 2 2 .9 -2 .9 -.9 2 -.9 -2 -2 -.9 2 -.9 Z" fill="#FFD24D"/>
     </symbol>
   </defs>
 </svg>
+
+<!-- Nền trang trí: cành đào hai góc + cánh hoa rơi -->
+<div class="bg-branch bg-branch-top" aria-hidden="true"></div>
+<div class="bg-branch bg-branch-bottom" aria-hidden="true"></div>
+<div class="petals" id="petals" aria-hidden="true"></div>
 
 <div class="app">
 
   <!-- A. Màn hình bắt đầu -->
   <section class="screen screen-start" id="screen-start" aria-labelledby="start-title">
     <div class="start-body">
-      <svg class="start-mouse" viewBox="0 0 64 56" aria-hidden="true"><use href="#mouse"/></svg>
+      <svg class="start-mouse" viewBox="0 0 64 56" aria-hidden="true"><use href="#cat"/></svg>
       <h1 class="game-title" id="start-title">Đập Chuột</h1>
       <p class="game-rule">Bấm trúng chuột để ghi điểm.<br>Bạn có 30 giây!</p>
+      <p class="rule-black"><svg viewBox="0 0 64 56" aria-hidden="true"><use href="#bcat"/></svg> Né mèo đen — đập trúng bị <b>−1 điểm</b></p>
       <p class="record-pill" id="start-best" hidden>🏆 Kỷ lục: <span id="start-best-value">0</span></p>
     </div>
     <button class="btn btn-primary btn-block" id="btn-start" type="button">Bắt đầu</button>
@@ -45,6 +129,7 @@
   <section class="screen screen-play" id="screen-play" hidden aria-label="Bàn chơi">
     <div class="hud">
       <span class="hud-score">Điểm: <span id="hud-score">0</span></span>
+      <button class="sound-toggle" id="btn-sound" type="button" aria-pressed="true" aria-label="Tắt tiếng" title="Tắt / bật tiếng">🔊</button>
       <span class="hud-time" id="hud-time-wrap">⏱ <span id="hud-time">30</span>s</span>
     </div>
 
@@ -79,6 +164,7 @@
     <div class="stats">
       <div class="stat"><b id="end-hits">0</b><span>Trúng</span></div>
       <div class="stat"><b id="end-misses">0</b><span>Trượt</span></div>
+      <div class="stat stat-black"><b id="end-black">0</b><span>Mèo đen</span></div>
       <div class="stat"><b id="end-accuracy">—</b><span>Chính xác</span></div>
     </div>
     <div class="end-actions">
@@ -90,5 +176,6 @@
 </div>
 
 <script src="game.js"></script>
+<script src="petals.js"></script>
 </body>
 </html>

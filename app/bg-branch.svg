@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 320 230">
+  <defs>
+    <!-- Bông đào 5 cánh -->
+    <g id="flower">
+      <g fill="#F9B9DD" stroke="#FE68C6" stroke-width="0.8">
+        <circle cx="0" cy="-7" r="7"/>
+        <circle cx="6.66" cy="-2.16" r="7"/>
+        <circle cx="4.11" cy="5.66" r="7"/>
+        <circle cx="-4.11" cy="5.66" r="7"/>
+        <circle cx="-6.66" cy="-2.16" r="7"/>
+      </g>
+      <circle r="4.2" fill="#EB2F96"/>
+      <circle r="1.8" fill="#FFE08A"/>
+    </g>
+    <g id="flower-light">
+      <g fill="#FCDDEF" stroke="#F9B9DD" stroke-width="0.8">
+        <circle cx="0" cy="-7" r="7"/>
+        <circle cx="6.66" cy="-2.16" r="7"/>
+        <circle cx="4.11" cy="5.66" r="7"/>
+        <circle cx="-4.11" cy="5.66" r="7"/>
+        <circle cx="-6.66" cy="-2.16" r="7"/>
+      </g>
+      <circle r="4" fill="#FE68C6"/>
+      <circle r="1.6" fill="#FFE08A"/>
+    </g>
+    <g id="bud">
+      <ellipse rx="4.5" ry="6" fill="#EB2F96"/>
+      <path d="M-3 4 Q0 9 3 4" fill="#5E8C4A"/>
+    </g>
+  </defs>
+
+  <!-- Cành -->
+  <g fill="none" stroke="#5B3A35" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M330 6 C 270 26, 225 52, 175 66 S 75 92, 14 150" stroke-width="7"/>
+    <path d="M245 38 C 236 70, 218 98, 196 122" stroke-width="4"/>
+    <path d="M175 66 C 152 46, 128 34, 96 30" stroke-width="3.5"/>
+    <path d="M102 92 C 96 120, 82 142, 64 166" stroke-width="3"/>
+    <path d="M60 120 C 44 116, 30 106, 20 94" stroke-width="2.5"/>
+    <path d="M214 104 C 230 112, 246 114, 262 112" stroke-width="2.5"/>
+  </g>
+
+  <!-- Hoa và nụ -->
+  <use xlink:href="#flower" transform="translate(286 22) scale(1.25)"/>
+  <use xlink:href="#flower-light" transform="translate(250 50) scale(1)"/>
+  <use xlink:href="#flower" transform="translate(208 64) scale(1.15) rotate(20)"/>
+  <use xlink:href="#flower-light" transform="translate(196 122) scale(1.05)"/>
+  <use xlink:href="#flower" transform="translate(166 74) scale(0.9) rotate(-15)"/>
+  <use xlink:href="#flower" transform="translate(98 30) scale(1.1) rotate(10)"/>
+  <use xlink:href="#flower-light" transform="translate(132 40) scale(0.85)"/>
+  <use xlink:href="#flower" transform="translate(110 88) scale(1.2) rotate(35)"/>
+  <use xlink:href="#flower-light" transform="translate(66 164) scale(1)"/>
+  <use xlink:href="#flower" transform="translate(50 124) scale(0.95)"/>
+  <use xlink:href="#flower-light" transform="translate(20 92) scale(0.8)"/>
+  <use xlink:href="#flower" transform="translate(262 112) scale(0.9) rotate(-25)"/>
+  <use xlink:href="#bud" transform="translate(232 30) rotate(-30)"/>
+  <use xlink:href="#bud" transform="translate(146 58) rotate(15)"/>
+  <use xlink:href="#bud" transform="translate(84 140) rotate(40)"/>
+  <use xlink:href="#bud" transform="translate(28 148) rotate(-20)"/>
+  <use xlink:href="#bud" transform="translate(222 92) rotate(60)"/>
+</svg>

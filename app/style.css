@@ -13,9 +13,70 @@ body {
   font-size: var(--font-size-md);
   line-height: var(--line-height-md);
   color: var(--color-text);
-  background: var(--color-bg-subtle);
+  background-color: var(--color-bg-subtle);
+  /* Nền: hồng nhạt phía trên chuyển dần sang xám ấm, thêm vài vệt sáng mềm */
+  background-image:
+    radial-gradient(circle at 85% 8%, rgba(254, 104, 198, .16), transparent 45%),
+    radial-gradient(circle at 10% 92%, rgba(212, 42, 135, .10), transparent 45%),
+    linear-gradient(180deg, var(--color-brand-50) 0%, var(--color-bg-subtle) 70%);
+  background-attachment: fixed;
   overflow-x: hidden;
 }
+
+/* ---------- Nền trang trí: cành đào ---------- */
+.bg-branch {
+  position: fixed;
+  z-index: 0;
+  pointer-events: none;
+  background: url("bg-branch.svg") no-repeat center / contain;
+}
+.bg-branch-top {
+  top: 0; right: 0;
+  width: min(52vw, 340px);
+  aspect-ratio: 320 / 230;
+}
+.bg-branch-bottom {
+  bottom: 0; left: 0;
+  width: min(40vw, 260px);
+  aspect-ratio: 320 / 230;
+  transform: rotate(180deg);
+  opacity: .85;
+}
+
+/* ---------- Cánh hoa rơi ---------- */
+.petals {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.petal-fall {
+  position: absolute;
+  top: -24px;
+  animation: petal-fall linear infinite;
+  will-change: transform;
+}
+.petal {
+  display: block;
+  border-radius: 100% 0 100% 0;
+  background: linear-gradient(135deg, var(--color-brand-200), var(--color-brand-300));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35);
+  animation: petal-sway ease-in-out infinite alternate;
+  will-change: transform;
+}
+.petal-light { background: linear-gradient(135deg, #FFFFFF, var(--color-brand-200)); }
+
+@keyframes petal-fall {
+  to { transform: translateY(calc(100vh + 48px)); }
+}
+@keyframes petal-sway {
+  from { transform: translateX(calc(var(--sway, 40px) * -1)) rotate(-25deg); }
+  to   { transform: translateX(var(--sway, 40px)) rotate(205deg); }
+}
+
+/* Nội dung game nằm trên nền và cánh hoa */
+.app { position: relative; z-index: 2; }
 
 [hidden] { display: none !important; }
 
@@ -177,6 +238,11 @@ p { margin: 0; }
 .hole.is-hit .mole .mole-normal { display: none; }
 .hole.is-hit .mole .mole-hit { display: block; }
 .hole.is-hit { box-shadow: 0 0 0 3px var(--color-brand-300); }
+
+/* Mèo hồng / mèo đen: chỉ hiện đúng loại đang trồi lên */
+.hole:not(.is-black) .mole .kind-black,
+.hole.is-black .mole .kind-pink { display: none !important; }
+.hole.is-black.is-hit { box-shadow: 0 0 0 3px var(--color-neutral-700); }
 .hole.is-instant .mole { transition: none; }
 
 /* Đập trượt: nhấp nhẹ, không dùng màu đỏ */
@@ -194,13 +260,53 @@ p { margin: 0; }
   color: var(--color-success);
   font-weight: var(--font-weight-extrabold);
   font-size: var(--font-size-xl);
+  line-height: 1.1;
+  text-align: center;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 #fff, 0 0 6px #fff;
   pointer-events: none;
-  animation: plus 400ms var(--easing-standard) forwards;
+  animation: plus 750ms var(--easing-standard) forwards;
 }
+.plus small {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-brand-600);
+}
+.plus.is-minus { color: var(--color-danger); }
+.plus.is-minus small { color: var(--color-neutral-800); }
 @keyframes plus {
-  from { opacity: 1; transform: translate(-50%, 0); }
-  to   { opacity: 0; transform: translate(-50%, -20px); }
+  0%   { opacity: 1; transform: translate(-50%, 0); }
+  60%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -20px); }
 }
+
+/* Nút bật/tắt tiếng trên HUD */
+.sound-toggle {
+  width: 36px; height: 36px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-accent);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.sound-toggle:hover { background: var(--color-brand-100); }
+.sound-toggle:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--color-focus-ring); }
+
+/* Dòng nhắc mèo đen ở màn hình bắt đầu */
+.rule-black {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border-radius: var(--radius-full);
+  padding: var(--space-1) var(--space-3) var(--space-1) var(--space-1);
+  box-shadow: var(--shadow-xs);
+}
+.rule-black svg { width: 32px; height: auto; }
+.rule-black b { color: var(--color-danger); }
 
 /* ---------- Lớp phủ ---------- */
 .overlay {
@@ -261,7 +367,8 @@ p { margin: 0; }
 }
 .result-best { color: var(--color-text-secondary); margin-top: var(--space-1); }
 
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2); }
+.stat-black b { color: var(--color-neutral-700); }
 .stat {
   background: var(--color-surface);
   border-radius: var(--radius-xl);
@@ -279,5 +386,9 @@ p { margin: 0; }
   .mole { transition: none; }
   .hole.is-miss { animation: none; }
   .countdown-num.is-pop { animation: none; }
-  @keyframes plus { from { opacity: 1; } to { opacity: 0; } }
+  .petals { display: none; }
+  @keyframes plus {
+    0%, 60% { opacity: 1; transform: translate(-50%, 0); }
+    100%    { opacity: 0; transform: translate(-50%, 0); }
+  }
 }

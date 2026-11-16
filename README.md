@@ -39,6 +39,14 @@ Mini game phản xạ chạy trên trình duyệt: lưới 3×3, 30 giây, đậ
 - Nếu cổng 3000 đã bị chiếm, đổi dòng `"3000:3000"` trong `docker-compose.yml` thành ví dụ `"8080:3000"` rồi mở http://localhost:8080.
 - Kỷ lục được lưu trong trình duyệt (localStorage) theo từng địa chỉ, nên kỷ lục ở `localhost:3000` tách biệt với khi mở file trực tiếp.
 
+## Cách chơi
+
+- Đập trúng **mèo hồng**: +1 điểm, hiện "Úi da!".
+- Đập trúng **mèo đen** (khoảng 1/6 số lần xuất hiện): −1 điểm, hiện "Nà ní!". Điểm có thể âm.
+- Đập ô trống: không trừ điểm, chỉ tính là trượt.
+- Máy có giọng đọc tiếng Việt thì game đọc to "Úi da" / "Nà ní" (ưu tiên giọng nữ). Máy không có giọng Việt thì chỉ hiện chữ. Bật/tắt tiếng bằng nút 🔊 trên thanh điểm.
+- Rời tab giữa lượt thì game tự tạm dừng.
+
 ## Chạy không cần Docker
 
 Mở trực tiếp file `app/index.html` bằng trình duyệt (giữ nguyên thư mục `design/` bên cạnh `app/`).
