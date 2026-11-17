@@ -160,6 +160,123 @@
       <div class="callout brand"><p>Lỗi phát hiện được ghi lại kèm: mã ca test, trình duyệt/thiết bị, các bước, kết quả thực tế, ảnh chụp hoặc video nếu có.</p></div>
     </section>
 
+    <!-- ===================== Bổ sung v1.1: Đăng ký người chơi & trang admin ===================== -->
+    <section class="card" id="v11-moi-truong">
+      <span class="eyebrow">Bổ sung v1.1</span>
+      <h2>Môi trường test đăng ký và admin</h2>
+      <ul>
+        <li>Chạy bằng Docker Compose (<code>docker compose up -d --build</code>) với file <code>.env</code> test: <code>ADMIN_USERNAME=admin</code>, mật khẩu test ≥ 12 ký tự (không dùng mật khẩu thật).</li>
+        <li>Mỗi đợt test bắt đầu từ database trống: <code>docker compose down -v</code> (xoá volume dữ liệu test) rồi khởi động lại.</li>
+        <li>Chỉ dùng dữ liệu giả (ví dụ <code>test1@example.com</code>, <code>0905000001</code>), không nhập thông tin người thật.</li>
+        <li>Thử thêm qua link ngrok (HTTPS) cho các ca cookie và điện thoại thật.</li>
+        <li>Mở file CSV bằng Excel và Google Sheets.</li>
+      </ul>
+    </section>
+
+    <section class="card" id="v11-ca-test">
+      <h2>Ca test chức năng (v1.1)</h2>
+
+      <h3>Đăng ký người chơi</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Liên quan</th></tr></thead>
+          <tbody>
+            <tr><td class="id">TC-30</td><td>Trình duyệt mới, bấm "Bắt đầu".</td><td>Hiện form đăng ký 3 ô + ô đồng ý; chưa vào đếm ngược.</td><td>F-14</td></tr>
+            <tr><td class="id">TC-31</td><td>Nhập hợp lệ (<code>Nguyễn Thị Lan</code>, <code>Lan@Example.com </code>, <code>+84 905 000 001</code>), tick đồng ý, bấm "Đăng ký &amp; chơi".</td><td>Vào đếm ngược 3-2-1. Admin thấy 1 người: email <code>lan@example.com</code>, SĐT <code>0905000001</code>.</td><td>F-14, R-20, R-21</td></tr>
+            <tr><td class="id">TC-32</td><td>Để trống từng ô rồi bấm gửi.</td><td>Báo lỗi dưới đúng ô, không gửi lên server.</td><td>F-14</td></tr>
+            <tr><td class="id">TC-33</td><td>Họ tên: <code>A</code>, 61 ký tự, <code>&lt;b&gt;Lan&lt;/b&gt;</code>, <code>Lan123</code>.</td><td>Đều bị từ chối với thông báo rõ ràng.</td><td>R-19</td></tr>
+            <tr><td class="id">TC-34</td><td>Email: <code>lan@gmail</code>, <code>lan gmail.com</code>, <code>@x.com</code>.</td><td>Đều bị từ chối.</td><td>R-20</td></tr>
+            <tr><td class="id">TC-35</td><td>SĐT: <code>090512345</code> (9 số), <code>01234567890</code>, <code>0205123456</code>, <code>abc</code>; và hợp lệ <code>0905.123.456</code>, <code>84 388 765 432</code>.</td><td>4 giá trị đầu bị từ chối; 2 giá trị sau được chấp nhận, lưu <code>0905123456</code>, <code>0388765432</code>.</td><td>R-21</td></tr>
+            <tr><td class="id">TC-36</td><td>Không tick ô đồng ý.</td><td>Không gửi được, báo cần đồng ý. Gọi thẳng API không có đồng ý → 400.</td><td>R-22, R-23</td></tr>
+            <tr><td class="id">TC-37</td><td>Bấm "Đăng ký &amp; chơi" 5 lần thật nhanh.</td><td>Chỉ 1 yêu cầu được gửi; database chỉ có 1 người.</td><td>F-14</td></tr>
+            <tr><td class="id">TC-38</td><td>Đăng ký lại cùng email (khác chữ hoa), đổi họ tên và SĐT.</td><td>Không tạo người mới; admin thấy họ tên và SĐT mới; điểm cũ còn nguyên.</td><td>R-24</td></tr>
+            <tr><td class="id">TC-39</td><td>Hai email khác nhau dùng cùng một SĐT.</td><td>Cả hai đăng ký thành công.</td><td>R-24</td></tr>
+            <tr><td class="id">TC-40</td><td>Gửi API sai trực tiếp (thiếu trường, sai kiểu, thân &gt; 10 KB).</td><td>400 / 413, không lưu gì, server không lỗi.</td><td>R-23</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Nhớ người chơi, kết nối server</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Liên quan</th></tr></thead>
+          <tbody>
+            <tr><td class="id">TC-41</td><td>Sau TC-31, tải lại trang.</td><td>"Xin chào, Lan!"; bấm "Bắt đầu" vào đếm ngược luôn, không hỏi lại.</td><td>F-16</td></tr>
+            <tr><td class="id">TC-42</td><td>Mở DevTools → localStorage <code>dap-chuot.player</code>.</td><td>Chỉ có <code>token</code> và <code>displayName</code>; không có email, SĐT.</td><td>F-16</td></tr>
+            <tr><td class="id">TC-43</td><td>Bấm "Không phải tôi?".</td><td>Form đăng ký trống; localStorage không còn <code>dap-chuot.player</code>; dữ liệu trên server vẫn còn.</td><td>F-16</td></tr>
+            <tr><td class="id">TC-44</td><td>Sửa token trong localStorage thành chuỗi bất kỳ, tải lại trang.</td><td>Server trả 401; game xoá token và yêu cầu đăng ký lại.</td><td>R-26</td></tr>
+            <tr><td class="id">TC-45</td><td>Mở bản GitHub Pages; hoặc tắt container rồi tải lại trang.</td><td>Thông báo "Không kết nối được máy chủ…", nút "Bắt đầu" bị khoá, có "Thử lại". Bật lại container, bấm "Thử lại" → dùng được.</td><td>F-15</td></tr>
+            <tr><td class="id">TC-46</td><td>Cửa sổ ẩn danh: đăng ký, chơi, tải lại trang.</td><td>Chơi được; tải lại phải đăng ký lại; email cũ không tạo bản ghi trùng.</td><td>F-16, R-24</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Lưu điểm</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Liên quan</th></tr></thead>
+          <tbody>
+            <tr><td class="id">TC-47</td><td>Chơi 1 lượt (vd 10 hồng, 3 đen, 2 trượt).</td><td>Màn hình kết thúc "✓ Đã lưu kết quả"; admin thấy Số lượt 1, Điểm cao nhất 7, Lượt gần nhất đúng giờ.</td><td>F-17, R-27, R-28</td></tr>
+            <tr><td class="id">TC-48</td><td>Chơi 3 lượt điểm 5, 12, 8.</td><td>Admin: Số lượt 3, Điểm cao nhất 12.</td><td>R-28</td></tr>
+            <tr><td class="id">TC-49</td><td>Lượt có điểm âm (chỉ đập mèo đen).</td><td>Lưu được điểm âm; Điểm cao nhất vẫn là điểm lớn nhất.</td><td>R-27</td></tr>
+            <tr><td class="id">TC-50</td><td>Tắt mạng (DevTools → Offline) ngay trước khi hết giờ.</td><td>"Chưa lưu được kết quả · Thử lại"; "Chơi lại" vẫn dùng được. Bật mạng, bấm "Thử lại" → "Đã lưu".</td><td>F-17</td></tr>
+            <tr><td class="id">TC-51</td><td>Gọi API gửi kết quả sai: <code>score ≠ hits − blackHits</code>, <code>hits = 500</code>, số thập phân.</td><td>400, không lưu.</td><td>R-27</td></tr>
+            <tr><td class="id">TC-52</td><td>Gửi 2 kết quả cùng token cách nhau 5 giây.</td><td>Lần 2 nhận 429, không lưu.</td><td>R-27</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Trang admin</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Liên quan</th></tr></thead>
+          <tbody>
+            <tr><td class="id">ADM-01</td><td>Mở <code>/admin</code> khi chưa đăng nhập; gọi thẳng <code>/api/admin/players</code>.</td><td>Hiện form đăng nhập; API trả 401, không lộ dữ liệu.</td><td>F-18, R-33</td></tr>
+            <tr><td class="id">ADM-02</td><td>Đăng nhập sai tên; sai mật khẩu.</td><td>Cùng một thông báo chung, không nói sai phần nào.</td><td>F-18</td></tr>
+            <tr><td class="id">ADM-03</td><td>Sai 5 lần liên tiếp, rồi nhập đúng.</td><td>Lần 6 bị từ chối (429) dù đúng; sau 15 phút đăng nhập được.</td><td>F-18</td></tr>
+            <tr><td class="id">ADM-04</td><td>Đăng nhập đúng; kiểm tra cookie trong DevTools.</td><td>Vào danh sách; cookie <code>admin_session</code> có HttpOnly, SameSite=Strict; qua ngrok có thêm Secure.</td><td>R-29</td></tr>
+            <tr><td class="id">ADM-05</td><td>Bấm "Đăng xuất", rồi bấm nút Back của trình duyệt và tải lại.</td><td>Về form đăng nhập; API trả 401.</td><td>F-18</td></tr>
+            <tr><td class="id">ADM-06</td><td>Xoá biến <code>ADMIN_PASSWORD</code> (hoặc đặt 8 ký tự), khởi động lại.</td><td>Trang admin báo chưa cấu hình; không đăng nhập được; game vẫn chạy.</td><td>F-18</td></tr>
+            <tr><td class="id">ADM-07</td><td>Database trống.</td><td>"Chưa có người chơi nào".</td><td>F-19</td></tr>
+            <tr><td class="id">ADM-08</td><td>Tạo 25 người chơi.</td><td>Trang 1 có 20 người mới nhất; trang 2 có 5; tổng "25".</td><td>F-19</td></tr>
+            <tr><td class="id">ADM-09</td><td>Tìm <code>nguyen</code>, <code>NGUYỄN</code>, <code>lan@</code>, <code>905 000</code>, <code>xyz</code>.</td><td>3 từ khoá đầu ra "Nguyễn Thị Lan"; <code>905 000</code> khớp SĐT <code>0905000001</code>; <code>xyz</code> → "Không tìm thấy…".</td><td>F-20, R-30</td></tr>
+            <tr><td class="id">ADM-10</td><td>Bấm "Xoá" rồi "Huỷ"; bấm "Xoá" rồi "Xoá vĩnh viễn".</td><td>Huỷ: không đổi. Xoá: người và toàn bộ lượt chơi biến mất; thiết bị của người đó phải đăng ký lại.</td><td>F-21, R-32</td></tr>
+            <tr><td class="id">ADM-11</td><td>Xuất CSV khi ô tìm kiếm trống; và khi đang tìm <code>nguyen</code>.</td><td>Lần 1: đủ mọi người (kể cả các trang sau). Lần 2: chỉ người khớp. Tên file đúng mẫu.</td><td>F-22</td></tr>
+            <tr><td class="id">ADM-12</td><td>Mở CSV bằng Excel và Google Sheets.</td><td>Tiếng Việt có dấu hiển thị đúng; cột đúng thứ tự; giờ theo UTC+7.</td><td>R-31</td></tr>
+            <tr><td class="id">ADM-13</td><td>Người chơi có họ tên <code>O'Neil</code> (hợp lệ); sửa tay database để email bắt đầu bằng <code>=1+1</code>, rồi xuất CSV.</td><td>Ô hiện nguyên văn <code>'=1+1</code>, Excel không tính công thức.</td><td>R-31</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Bảo mật và dữ liệu</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Kiểm tra</th><th>Kết quả mong đợi</th></tr></thead>
+          <tbody>
+            <tr><td class="id">SEC-01</td><td>Chạy <code>git status</code> và xem <code>.gitignore</code> sau khi có database và <code>.env</code>.</td><td>File <code>.db</code> và <code>.env</code> không xuất hiện để commit.</td></tr>
+            <tr><td class="id">SEC-02</td><td>Đọc log container sau khi đăng ký và tìm kiếm.</td><td>Log không chứa họ tên, email, SĐT, mật khẩu hay token.</td></tr>
+            <tr><td class="id">SEC-03</td><td>Mở database bằng công cụ SQLite, xem bảng <code>player_tokens</code>.</td><td>Chỉ có mã băm, không có token gốc.</td></tr>
+            <tr><td class="id">SEC-04</td><td>Gửi <code>DELETE /api/admin/players/1</code> từ một trang web khác (Origin khác) khi admin đang đăng nhập.</td><td>Bị từ chối (403); dữ liệu không đổi.</td></tr>
+            <tr><td class="id">SEC-05</td><td>Gọi 11 lần đăng ký trong 1 phút từ cùng IP.</td><td>Lần 11 nhận 429.</td></tr>
+            <tr><td class="id">SEC-06</td><td>Họ tên đã lưu chứa <code>&lt;script&gt;</code> (chèn thẳng vào DB), mở trang admin.</td><td>Hiện dạng chữ, không chạy script.</td></tr>
+            <tr><td class="id">DATA-01</td><td>Đăng ký, chơi, rồi <code>docker compose up -d --build</code>.</td><td>Dữ liệu còn nguyên sau khi build lại.</td></tr>
+            <tr><td class="id">DATA-02</td><td>Xoá file database, khởi động lại.</td><td>Server tự tạo database trống, không lỗi.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" id="v11-tieu-chi">
+      <h2>Tiêu chí hoàn thành (v1.1)</h2>
+      <ul class="checklist">
+        <li>TC-30 → TC-52, ADM-01 → ADM-13, SEC-01 → SEC-06, DATA-01 → DATA-02 đều đạt.</li>
+        <li>Các ca TC-01 → TC-29 cũ vẫn đạt (đăng ký không làm hỏng vòng chơi, đồng hồ, kỷ lục).</li>
+        <li>Đã thử đăng ký và chơi trên ít nhất một điện thoại thật qua link ngrok.</li>
+        <li>Không có lỗi trong Console ở trang game và trang admin.</li>
+        <li>Các giả định ở trang 02 (mục "Giả định và câu hỏi còn mở") đã được xác nhận <span class="badge badge-new">Đạt 17/11/2026</span>.</li>
+      </ul>
+    </section>
+
     <nav class="pager" aria-label="Chuyển trang">
       <a href="04-quy-tac-du-lieu.html"><small>← Trước</small>04 · Quy tắc &amp; dữ liệu</a>
       <a class="next" href="index.html"><small>Về →</small>Mục lục</a>

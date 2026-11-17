@@ -156,6 +156,135 @@
       </ul>
     </section>
 
+    <!-- ===================== Bổ sung v1.1: Đăng ký người chơi & trang admin ===================== -->
+    <section class="card" id="dang-ky-tong-hop">
+      <span class="eyebrow">Bổ sung v1.1</span>
+      <h2>Đăng ký người chơi và trang admin</h2>
+      <p>Người chơi nhập họ tên, email, số điện thoại trước khi chơi; dữ liệu và điểm từng lượt lưu vào database <strong>SQLite</strong> trên server. Admin đăng nhập để xem, tìm kiếm, xoá và xuất danh sách ra CSV.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Quyết định</th><th>Nội dung đã chốt</th></tr></thead>
+          <tbody>
+            <tr><td>Database</td><td>SQLite: một file nằm trong Docker volume của dịch vụ <code>app</code>, không thêm dịch vụ mới.</td></tr>
+            <tr><td>Số lần đăng ký</td><td>Đăng ký <strong>1 lần</strong>, trình duyệt nhớ người chơi; có nút "Không phải tôi?" để đăng ký người khác.</td></tr>
+            <tr><td>Email trùng</td><td>Nhận là người chơi cũ: cập nhật họ tên và số điện thoại, không tạo bản ghi trùng.</td></tr>
+            <tr><td>Điểm</td><td>Lưu điểm <strong>từng lượt</strong> gắn với người chơi; admin thấy số lượt và điểm cao nhất.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warn">
+        <p><strong>Phạm vi chạy:</strong> tính năng cần server Node.js + SQLite nên chỉ hoạt động khi chạy bằng Docker (<code>localhost:3000</code>, link ngrok hoặc server thật). Bản GitHub Pages chỉ phục vụ file tĩnh nên <strong>không đăng ký được</strong> (xem F-15).</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mã</th><th>Chức năng</th><th>Nhóm</th><th>Ưu tiên</th></tr></thead>
+          <tbody>
+            <tr><td class="id">F-14</td><td>Form đăng ký người chơi <span class="badge badge-new">Mới</span></td><td>Người chơi</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-15</td><td>Kiểm tra kết nối server trước khi đăng ký <span class="badge badge-new">Mới</span></td><td>Người chơi</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-16</td><td>Nhớ người chơi trên thiết bị / "Không phải tôi?" <span class="badge badge-new">Mới</span></td><td>Người chơi</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-17</td><td>Lưu điểm từng lượt lên server <span class="badge badge-new">Mới</span></td><td>Dữ liệu</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-18</td><td>Đăng nhập / đăng xuất admin <span class="badge badge-new">Mới</span></td><td>Admin</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-19</td><td>Xem danh sách người chơi <span class="badge badge-new">Mới</span></td><td>Admin</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-20</td><td>Tìm kiếm người chơi <span class="badge badge-new">Mới</span></td><td>Admin</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-21</td><td>Xoá người chơi <span class="badge badge-new">Mới</span></td><td>Admin</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+            <tr><td class="id">F-22</td><td>Xuất danh sách ra file CSV <span class="badge badge-new">Mới</span></td><td>Admin</td><td><span class="badge badge-danger">Bắt buộc</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" id="dang-ky-chi-tiet">
+      <h2>Mô tả chi tiết (v1.1)</h2>
+
+      <h3>F-14 · Form đăng ký người chơi</h3>
+      <ul>
+        <li>Hiện khi người chơi bấm "Bắt đầu" mà thiết bị chưa có người chơi đã đăng ký.</li>
+        <li>3 trường bắt buộc: <strong>Họ tên</strong>, <strong>Email</strong>, <strong>Số điện thoại</strong>; 1 ô đồng ý bắt buộc: "Tôi đồng ý cho lưu họ tên, email, số điện thoại để quản lý người chơi và kết quả".</li>
+        <li>Kiểm tra dữ liệu ngay trên trình duyệt (khi rời ô và khi bấm gửi) và kiểm tra lại trên server; quy tắc ở trang 04 (R-19 → R-23).</li>
+        <li>Nút "Đăng ký &amp; chơi": bị khoá khi đang gửi để không tạo 2 yêu cầu. Thành công → vào đếm ngược 3-2-1 luôn.</li>
+        <li>Lỗi từng ô hiện ngay dưới ô đó; lỗi server/mạng hiện ở đầu form, giữ nguyên dữ liệu đã nhập.</li>
+        <li>Nút "Quay lại" về màn hình bắt đầu, không lưu gì.</li>
+        <li>Email đã tồn tại → server nhận là người chơi cũ, cập nhật họ tên và số điện thoại mới nhất, trả về cùng người chơi đó (R-24).</li>
+      </ul>
+
+      <h3>F-15 · Kiểm tra kết nối server</h3>
+      <ul>
+        <li>Khi tải trang, game gọi <code>GET /api/health</code>. Không gọi được (mở bằng <code>file://</code>, GitHub Pages, server tắt) → màn hình bắt đầu hiện thông báo "Không kết nối được máy chủ, chưa thể đăng ký để chơi" và nút "Thử lại"; nút "Bắt đầu" bị khoá.</li>
+        <li>Máy chủ hoạt động trở lại → bấm "Thử lại" là dùng được, không cần tải lại trang.</li>
+      </ul>
+
+      <h3>F-16 · Nhớ người chơi trên thiết bị</h3>
+      <ul>
+        <li>Đăng ký thành công → trình duyệt lưu <strong>mã thiết bị</strong> (token ngẫu nhiên do server cấp) và tên hiển thị. Không lưu email/số điện thoại trên trình duyệt.</li>
+        <li>Lần sau mở game: màn hình bắt đầu hiện "Xin chào, <em>Tên</em>!", bấm "Bắt đầu" là vào đếm ngược luôn.</li>
+        <li>Game xác nhận lại mã với server (<code>GET /api/players/me</code>). Mã không còn hợp lệ (admin đã xoá người chơi) → xoá mã trên máy và yêu cầu đăng ký lại.</li>
+        <li>Nút "Không phải tôi?" → xoá mã trên máy, hiện lại form đăng ký trống. Không xoá dữ liệu trên server.</li>
+        <li>Trình duyệt chặn lưu trữ (ẩn danh) → vẫn chơi được trong phiên hiện tại, tải lại trang phải đăng ký lại (email trùng nên không tạo bản ghi mới).</li>
+      </ul>
+
+      <h3>F-17 · Lưu điểm từng lượt</h3>
+      <ul>
+        <li>Hết lượt → gửi <code>POST /api/rounds</code> gồm điểm, số trúng, trượt, mèo đen kèm mã thiết bị.</li>
+        <li>Màn hình kết thúc hiện trạng thái nhỏ: "Đang lưu…" → "Đã lưu kết quả" hoặc "Chưa lưu được kết quả" kèm nút "Thử lại". Lỗi lưu không chặn "Chơi lại" / "Về trang chủ".</li>
+        <li>Kỷ lục trên màn hình vẫn tính theo trình duyệt (localStorage) như cũ; điểm cao nhất trên server dùng cho trang admin.</li>
+      </ul>
+
+      <h3>F-18 · Đăng nhập / đăng xuất admin</h3>
+      <ul>
+        <li>Trang <code>/admin</code>. Chưa đăng nhập → hiện form tên đăng nhập + mật khẩu.</li>
+        <li>Một tài khoản admin duy nhất, cấu hình bằng biến môi trường <code>ADMIN_USERNAME</code> và <code>ADMIN_PASSWORD</code> (đặt trong file <code>.env</code>, không commit). Thiếu biến → trang admin báo "Chưa cấu hình tài khoản admin" và không cho đăng nhập.</li>
+        <li>Sai thông tin → báo chung "Tên đăng nhập hoặc mật khẩu không đúng" (không nói sai phần nào). Sai 5 lần liên tiếp từ cùng IP → khoá đăng nhập 15 phút.</li>
+        <li>Đăng nhập thành công → phiên làm việc 8 giờ (cookie). Nút "Đăng xuất" huỷ phiên ngay.</li>
+        <li>Mọi API admin trả 401 khi chưa đăng nhập hoặc phiên hết hạn; giao diện chuyển về form đăng nhập.</li>
+      </ul>
+
+      <h3>F-19 · Xem danh sách người chơi</h3>
+      <ul>
+        <li>Bảng gồm: Họ tên, Email, Số điện thoại, Ngày đăng ký, Số lượt, Điểm cao nhất, Lượt gần nhất.</li>
+        <li>Mặc định sắp xếp người đăng ký mới nhất lên đầu; 20 người mỗi trang, có phân trang và tổng số người chơi.</li>
+        <li>Danh sách trống → hiện "Chưa có người chơi nào".</li>
+      </ul>
+
+      <h3>F-20 · Tìm kiếm</h3>
+      <ul>
+        <li>Một ô tìm kiếm, tìm đồng thời trong họ tên, email, số điện thoại.</li>
+        <li>Không phân biệt hoa/thường và <strong>không phân biệt dấu</strong> ("nguyen" tìm ra "Nguyễn"). Số điện thoại tìm theo chữ số, bỏ qua khoảng trắng/dấu chấm.</li>
+        <li>Tự tìm sau khi ngừng gõ 300 ms; về trang 1; không có kết quả → "Không tìm thấy người chơi phù hợp".</li>
+      </ul>
+
+      <h3>F-21 · Xoá người chơi</h3>
+      <ul>
+        <li>Mỗi dòng có nút "Xoá". Bấm → hộp xác nhận ghi rõ họ tên, email và "Thao tác này xoá vĩnh viễn người chơi và toàn bộ điểm, không khôi phục được".</li>
+        <li>Đồng ý → xoá cứng người chơi, các lượt chơi và mã thiết bị của họ; bảng cập nhật, hiện thông báo "Đã xoá".</li>
+        <li>Không có xoá hàng loạt trong phiên bản này.</li>
+      </ul>
+
+      <h3>F-22 · Xuất CSV</h3>
+      <ul>
+        <li>Nút "Xuất CSV" tải file gồm <strong>tất cả người chơi khớp ô tìm kiếm hiện tại</strong> (không giới hạn theo trang). Ô tìm kiếm trống → xuất tất cả.</li>
+        <li>Tên file: <code>dap-chuot-nguoi-choi-YYYYMMDD-HHmm.csv</code>. Cột như bảng F-19, thêm cột Mã người chơi. Định dạng chi tiết ở trang 04 (R-31).</li>
+      </ul>
+    </section>
+
+    <section class="card" id="dang-ky-gia-dinh">
+      <h2>Giả định và câu hỏi còn mở (v1.1)</h2>
+      <p>Các điểm dưới đây chưa được hỏi trong phần làm rõ; tài liệu đang dùng phương án mặc định, cần xác nhận trước khi viết code.</p>
+      <div class="callout brand"><p><span class="badge badge-new">Đã xác nhận</span> Ngày 17/11/2026: đồng ý cả 5 phương án dưới đây. Đây là yêu cầu chính thức của v1.1.</p></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Điểm cần xác nhận</th><th>Phương án đã chốt</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Bản GitHub Pages không có server</td><td>Không cho chơi khi không kết nối được server (F-15). Phương án khác: cho "chơi thử không lưu điểm".</td></tr>
+            <tr><td>2</td><td>Số tài khoản admin</td><td>1 tài khoản từ biến môi trường; không có trang quản lý tài khoản admin.</td></tr>
+            <tr><td>3</td><td>Số điện thoại trùng giữa 2 email khác nhau</td><td>Cho phép (người nhà dùng chung số); chỉ email là duy nhất.</td></tr>
+            <tr><td>4</td><td>Thời gian giữ dữ liệu</td><td>Giữ đến khi admin xoá; chưa có tự động xoá theo thời hạn.</td></tr>
+            <tr><td>5</td><td>Ô đồng ý lưu dữ liệu cá nhân</td><td>Bắt buộc tick (thực hành tốt khi thu thập dữ liệu cá nhân); nội dung câu chữ cần bạn duyệt.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <nav class="pager" aria-label="Chuyển trang">
       <a href="01-tong-quan.html"><small>← Trước</small>01 · Tổng quan</a>
       <a class="next" href="03-man-hinh.html"><small>Tiếp →</small>03 · Màn hình</a>

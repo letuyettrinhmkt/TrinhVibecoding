@@ -214,6 +214,173 @@
       </ul>
     </section>
 
+    <!-- ===================== Bổ sung v1.1: Đăng ký người chơi & trang admin ===================== -->
+    <section class="card" id="v11-luong">
+      <span class="eyebrow">Bổ sung v1.1</span>
+      <h2>Luồng màn hình có đăng ký</h2>
+      <div class="flow">
+        <span class="node">Bắt đầu</span><span class="arrow">→ "Bắt đầu" (chưa đăng ký) →</span>
+        <span class="node">Đăng ký</span><span class="arrow">→ "Đăng ký &amp; chơi" →</span>
+        <span class="node">Đếm ngược 3-2-1</span>
+      </div>
+      <div class="flow">
+        <span class="node">Bắt đầu</span><span class="arrow">→ "Bắt đầu" (đã đăng ký) →</span>
+        <span class="node">Đếm ngược 3-2-1</span>
+      </div>
+      <div class="flow">
+        <span class="node">Bắt đầu</span><span class="arrow">→ "Không phải tôi?" →</span>
+        <span class="node">Đăng ký (form trống)</span>
+      </div>
+      <div class="flow">
+        <span class="node alt">/admin</span><span class="arrow">→ đăng nhập →</span>
+        <span class="node alt">Danh sách người chơi</span><span class="arrow">→ "Xoá" →</span>
+        <span class="node alt">Hộp xác nhận</span>
+      </div>
+    </section>
+
+    <section class="card" id="v11-wireframe-nguoi-choi">
+      <h2>Wireframe phía người chơi</h2>
+      <div class="screens">
+        <figure style="margin:0">
+          <div class="phone">
+            <div class="wf-title" style="margin-top:0">Đăng ký</div>
+            <div class="wf-text">Nhập thông tin để bắt đầu chơi</div>
+            <div class="wf-form">
+              <div><div class="wf-label">Họ tên *</div><div class="wf-input">Nguyễn Thị Lan</div></div>
+              <div><div class="wf-label">Email *</div><div class="wf-input is-error">lan@gmail</div><div class="wf-err">Email chưa đúng định dạng</div></div>
+              <div><div class="wf-label">Số điện thoại *</div><div class="wf-input">0905 123 456</div></div>
+              <div class="wf-check">Tôi đồng ý cho lưu họ tên, email, số điện thoại để quản lý người chơi và kết quả.</div>
+            </div>
+            <div class="wf-spacer"></div>
+            <div class="wf-btn">Đăng ký &amp; chơi</div>
+            <div class="wf-link">← Quay lại</div>
+          </div>
+          <figcaption class="phone-caption"><strong>F.</strong> Đăng ký (có lỗi ở ô Email)</figcaption>
+        </figure>
+
+        <figure style="margin:0">
+          <div class="phone">
+            <div class="wf-spacer"></div>
+            <div class="wf-title">Đập Chuột</div>
+            <div class="wf-text">Bấm trúng để ghi điểm. Bạn có 30 giây!</div>
+            <div class="wf-record">👋 Xin chào, Lan!</div>
+            <div class="wf-link">Không phải tôi?</div>
+            <div class="wf-spacer"></div>
+            <div class="wf-btn">Bắt đầu</div>
+          </div>
+          <figcaption class="phone-caption"><strong>G.</strong> Bắt đầu — đã đăng ký</figcaption>
+        </figure>
+
+        <figure style="margin:0">
+          <div class="phone">
+            <div class="wf-spacer"></div>
+            <div class="wf-title">Đập Chuột</div>
+            <div class="wf-alert">Không kết nối được máy chủ, chưa thể đăng ký để chơi.</div>
+            <div class="wf-btn ghost">Thử lại</div>
+            <div class="wf-spacer"></div>
+            <div class="wf-btn" style="opacity:.45">Bắt đầu</div>
+          </div>
+          <figcaption class="phone-caption"><strong>H.</strong> Không có máy chủ (GitHub Pages / server tắt)</figcaption>
+        </figure>
+
+        <figure style="margin:0">
+          <div class="phone">
+            <div class="wf-title" style="margin-top:8px">Hết giờ!</div>
+            <div class="wf-result">
+              <div class="tile-label">Điểm của bạn</div>
+              <div class="wf-score">27</div>
+              <div class="wf-text">Kỷ lục: 27</div>
+            </div>
+            <div class="wf-ok">✓ Đã lưu kết quả</div>
+            <div class="wf-alert">Chưa lưu được kết quả. <u>Thử lại</u></div>
+            <div class="wf-note">(chỉ hiện một trong hai dòng trên)</div>
+            <div class="wf-spacer"></div>
+            <div class="wf-btn">Chơi lại</div>
+          </div>
+          <figcaption class="phone-caption"><strong>I.</strong> Kết thúc — trạng thái lưu điểm</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="card" id="v11-wireframe-admin">
+      <h2>Wireframe trang admin</h2>
+      <p>Trang admin dùng trên máy tính là chính; ở màn hình hẹp, bảng cuộn ngang trong khung riêng, trang không cuộn ngang.</p>
+      <div class="screens wide">
+        <figure style="margin:0">
+          <div class="desktop">
+            <div class="desktop-bar"><i></i><i></i><i></i><span>localhost:3000/admin</span></div>
+            <div class="desktop-body">
+              <div class="wf-dialog" style="box-shadow:var(--shadow-md)">
+                <b>Đăng nhập quản trị</b>
+                <div><div class="wf-label">Tên đăng nhập</div><div class="wf-input">admin</div></div>
+                <div><div class="wf-label">Mật khẩu</div><div class="wf-input">••••••••</div></div>
+                <div class="wf-alert">Tên đăng nhập hoặc mật khẩu không đúng</div>
+                <div class="wf-btn">Đăng nhập</div>
+              </div>
+            </div>
+          </div>
+          <figcaption class="phone-caption"><strong>J.</strong> Admin — đăng nhập</figcaption>
+        </figure>
+
+        <figure style="margin:0">
+          <div class="desktop">
+            <div class="desktop-bar"><i></i><i></i><i></i><span>localhost:3000/admin</span></div>
+            <div class="desktop-body">
+              <div class="wf-adminbar"><span>Người chơi (128)</span><span class="wf-mini-btn ghost">Đăng xuất</span></div>
+              <div class="wf-toolbar"><div class="wf-input">🔍 Tìm theo họ tên, email, số điện thoại…</div><span class="wf-mini-btn">Xuất CSV</span></div>
+              <div class="table-wrap" style="margin:0">
+                <table class="wf-table">
+                  <thead><tr><th>Họ tên</th><th>Email</th><th>Số điện thoại</th><th>Ngày đăng ký</th><th>Số lượt</th><th>Điểm cao nhất</th><th>Lượt gần nhất</th><th></th></tr></thead>
+                  <tbody>
+                    <tr><td>Nguyễn Thị Lan</td><td>lan@gmail.com</td><td>0905123456</td><td>17/11/2026 10:21</td><td>6</td><td>27</td><td>17/11/2026 10:40</td><td class="del">Xoá</td></tr>
+                    <tr><td>Trần Văn Huy</td><td>huy.tran@yahoo.com</td><td>0912345678</td><td>17/11/2026 09:58</td><td>2</td><td>14</td><td>17/11/2026 10:02</td><td class="del">Xoá</td></tr>
+                    <tr><td>Lê Minh Anh</td><td>minhanh@outlook.com</td><td>0388765432</td><td>16/11/2026 21:15</td><td>0</td><td>—</td><td>—</td><td class="del">Xoá</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="wf-pager"><span>Hiển thị 1–20 / 128</span><span>‹ Trước · 1 · 2 · 3 … 7 · Sau ›</span></div>
+            </div>
+          </div>
+          <figcaption class="phone-caption"><strong>K.</strong> Admin — danh sách, tìm kiếm, xuất CSV</figcaption>
+        </figure>
+
+        <figure style="margin:0">
+          <div class="desktop">
+            <div class="desktop-bar"><i></i><i></i><i></i><span>localhost:3000/admin</span></div>
+            <div class="desktop-body" style="background:rgba(28,23,26,.35)">
+              <div class="wf-dialog">
+                <b>Xoá người chơi?</b>
+                <div>Nguyễn Thị Lan · lan@gmail.com</div>
+                <div class="wf-alert">Thao tác này xoá vĩnh viễn người chơi và toàn bộ điểm, không khôi phục được.</div>
+                <div class="wf-toolbar"><span class="wf-mini-btn ghost">Huỷ</span><span class="wf-mini-btn danger">Xoá vĩnh viễn</span></div>
+              </div>
+            </div>
+          </div>
+          <figcaption class="phone-caption"><strong>L.</strong> Admin — xác nhận xoá</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="card" id="v11-thanh-phan">
+      <h2>Đặc tả thành phần (v1.1)</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Thành phần</th><th>Đặc tả</th><th>Token</th></tr></thead>
+          <tbody>
+            <tr><td>Ô nhập</td><td>Cao 44 px trên điện thoại (dễ chạm), bo 4 px, viền xám; focus viền hồng; lỗi viền đỏ + dòng lỗi đỏ 12 px bên dưới. Chữ trong ô 16 px để iPhone không tự phóng to.</td><td><code>--radius-sm</code>, <code>--color-border-strong</code>, <code>--color-danger</code></td></tr>
+            <tr><td>Kiểu bàn phím</td><td>Email: <code>type="email"</code>; số điện thoại: <code>type="tel"</code>, <code>inputmode="tel"</code>; có <code>autocomplete</code> (name, email, tel).</td><td>—</td></tr>
+            <tr><td>Ô đồng ý</td><td>Checkbox 20 px, cả dòng chữ bấm được.</td><td><code>--color-primary</code></td></tr>
+            <tr><td>Lời chào</td><td>Pill trắng "👋 Xin chào, <em>Tên</em>!" (tên gọi = từ cuối của họ tên, tối đa 20 ký tự) và link "Không phải tôi?" bên dưới.</td><td><code>--radius-full</code>, <code>--color-text-link</code></td></tr>
+            <tr><td>Thông báo lỗi chung</td><td>Khối nền đỏ nhạt chữ đỏ ở đầu form / màn hình.</td><td><code>--color-danger-bg</code></td></tr>
+            <tr><td>Trạng thái lưu điểm</td><td>Chữ nhỏ dưới thẻ kết quả: xám "Đang lưu…", xanh "✓ Đã lưu kết quả", đỏ "Chưa lưu được kết quả · Thử lại".</td><td><code>--color-success</code>, <code>--color-danger</code></td></tr>
+            <tr><td>Trang admin</td><td>Nền xám ấm, rộng tối đa 1200 px; bảng trắng, tiêu đề cột cố định khi cuộn; số dùng <code>tabular-nums</code>; nút "Xoá" chữ đỏ.</td><td><code>--container-max</code>, <code>--color-danger</code></td></tr>
+            <tr><td>Hộp xác nhận xoá</td><td>Hộp thoại giữa màn hình, nền tối mờ phía sau; nút "Huỷ" được focus sẵn; Esc = Huỷ.</td><td><code>--shadow-xl</code>, <code>--radius-2xl</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout brand"><p>Trang admin không hiện trong game và có thẻ <code>&lt;meta name="robots" content="noindex"&gt;</code> để không bị máy tìm kiếm thu thập.</p></div>
+    </section>
+
     <nav class="pager" aria-label="Chuyển trang">
       <a href="02-chuc-nang.html"><small>← Trước</small>02 · Chức năng</a>
       <a class="next" href="04-quy-tac-du-lieu.html"><small>Tiếp →</small>04 · Quy tắc &amp; dữ liệu</a>
