@@ -160,12 +160,12 @@
     <section class="card" id="dang-ky-tong-hop">
       <span class="eyebrow">Bổ sung v1.1</span>
       <h2>Đăng ký người chơi và trang admin</h2>
-      <p>Người chơi nhập họ tên, email, số điện thoại trước khi chơi; dữ liệu và điểm từng lượt lưu vào database <strong>SQLite</strong> trên server. Admin đăng nhập để xem, tìm kiếm, xoá và xuất danh sách ra CSV.</p>
+      <p>Người chơi nhập họ tên, email, số điện thoại trước khi chơi; dữ liệu và điểm từng lượt lưu vào database <strong>PostgreSQL</strong> trên server. Admin đăng nhập để xem, tìm kiếm, xoá và xuất danh sách ra CSV.</p>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Quyết định</th><th>Nội dung đã chốt</th></tr></thead>
           <tbody>
-            <tr><td>Database</td><td>SQLite: một file nằm trong Docker volume của dịch vụ <code>app</code>, không thêm dịch vụ mới.</td></tr>
+            <tr><td>Database</td><td>PostgreSQL 16: dịch vụ <code>db</code> thứ hai trong Docker Compose, dữ liệu trong volume <code>db-data</code>; mật khẩu trong <code>.env</code>. <span class="badge badge-new">Đổi từ SQLite ngày 17/11/2026</span></td></tr>
             <tr><td>Số lần đăng ký</td><td>Đăng ký <strong>1 lần</strong>, trình duyệt nhớ người chơi; có nút "Không phải tôi?" để đăng ký người khác.</td></tr>
             <tr><td>Email trùng</td><td>Nhận là người chơi cũ: cập nhật họ tên và số điện thoại, không tạo bản ghi trùng.</td></tr>
             <tr><td>Điểm</td><td>Lưu điểm <strong>từng lượt</strong> gắn với người chơi; admin thấy số lượt và điểm cao nhất.</td></tr>
@@ -173,7 +173,7 @@
         </table>
       </div>
       <div class="callout warn">
-        <p><strong>Phạm vi chạy:</strong> tính năng cần server Node.js + SQLite nên chỉ hoạt động khi chạy bằng Docker (<code>localhost:3000</code>, link ngrok hoặc server thật). Bản GitHub Pages chỉ phục vụ file tĩnh nên <strong>không đăng ký được</strong> (xem F-15).</p>
+        <p><strong>Phạm vi chạy:</strong> tính năng cần server Node.js + PostgreSQL nên chỉ hoạt động khi chạy bằng Docker (<code>localhost:3000</code>, link ngrok hoặc server thật). Bản GitHub Pages chỉ phục vụ file tĩnh nên <strong>không đăng ký được</strong> (xem F-15).</p>
       </div>
 
       <div class="table-wrap">

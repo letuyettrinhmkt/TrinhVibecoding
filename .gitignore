@@ -5,9 +5,19 @@ yarn-debug.log*
 yarn-error.log*
 *.log
 
-# Biến môi trường
+# Biến môi trường (chứa mật khẩu database, admin) — chỉ commit .env.example
 .env
 .env.*
+!.env.example
+
+# Dữ liệu database cục bộ (nếu có)
+*.db
+*.db-*
+*.sqlite
+pgdata/
+
+# File CSV xuất từ trang admin (chứa dữ liệu cá nhân)
+dap-chuot-nguoi-choi-*.csv
 
 # Hệ điều hành / trình soạn thảo
 .DS_Store

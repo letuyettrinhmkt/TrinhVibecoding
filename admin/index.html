@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Quản trị — Đập Chuột</title>
+<link rel="stylesheet" href="/design/tokens.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- Đang kiểm tra phiên -->
+<div class="center" id="view-loading"><p class="muted">Đang tải…</p></div>
+
+<!-- Chưa cấu hình tài khoản admin -->
+<div class="center" id="view-unconfigured" hidden>
+  <div class="card narrow">
+    <h1>Chưa cấu hình tài khoản admin</h1>
+    <p class="muted">Đặt <code>ADMIN_USERNAME</code> và <code>ADMIN_PASSWORD</code> (tối thiểu 12 ký tự) trong file <code>.env</code> rồi khởi động lại server.</p>
+  </div>
+</div>
+
+<!-- J. Đăng nhập -->
+<div class="center" id="view-login" hidden>
+  <form class="card narrow" id="login-form" novalidate>
+    <h1>Đăng nhập quản trị</h1>
+    <p class="alert" id="login-alert" hidden role="alert"></p>
+    <label class="field">
+      <span>Tên đăng nhập</span>
+      <input id="login-username" type="text" autocomplete="username" required>
+    </label>
+    <label class="field">
+      <span>Mật khẩu</span>
+      <input id="login-password" type="password" autocomplete="current-password" required>
+    </label>
+    <button class="btn btn-primary btn-block" id="btn-login" type="submit">Đăng nhập</button>
+  </form>
+</div>
+
+<!-- K. Danh sách người chơi -->
+<div class="page" id="view-list" hidden>
+  <header class="topbar">
+    <h1>Người chơi <span class="count" id="total">(0)</span></h1>
+    <button class="btn btn-outline btn-sm" id="btn-logout" type="button">Đăng xuất</button>
+  </header>
+
+  <div class="toolbar">
+    <label class="search">
+      <span class="sr-only">Tìm kiếm</span>
+      <input id="search" type="search" placeholder="🔍 Tìm theo họ tên, email, số điện thoại…" maxlength="100" autocomplete="off">
+    </label>
+    <a class="btn btn-primary btn-sm" id="btn-export" href="/api/admin/players.csv" download>Xuất CSV</a>
+  </div>
+
+  <p class="alert" id="list-alert" hidden role="alert"></p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Họ tên</th><th>Email</th><th>Số điện thoại</th><th>Ngày đăng ký</th>
+          <th class="num">Số lượt</th><th class="num">Điểm cao nhất</th><th>Lượt gần nhất</th><th><span class="sr-only">Thao tác</span></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p class="empty" id="empty" hidden></p>
+  </div>
+
+  <nav class="pager" aria-label="Phân trang">
+    <span id="range" class="muted"></span>
+    <span class="pager-btns">
+      <button class="btn btn-outline btn-sm" id="btn-prev" type="button">‹ Trước</button>
+      <span id="page-info" class="muted"></span>
+      <button class="btn btn-outline btn-sm" id="btn-next" type="button">Sau ›</button>
+    </span>
+  </nav>
+</div>
+
+<!-- L. Xác nhận xoá -->
+<dialog class="dialog" id="confirm-dialog" aria-labelledby="confirm-title">
+  <form method="dialog">
+    <h2 id="confirm-title">Xoá người chơi?</h2>
+    <p id="confirm-who"></p>
+    <p class="alert">Thao tác này xoá vĩnh viễn người chơi và toàn bộ điểm, không khôi phục được.</p>
+    <div class="dialog-actions">
+      <button class="btn btn-outline btn-sm" value="cancel" id="btn-cancel-delete" autofocus>Huỷ</button>
+      <button class="btn btn-danger btn-sm" value="confirm" id="btn-confirm-delete">Xoá vĩnh viễn</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="admin.js"></script>
+</body>
+</html>

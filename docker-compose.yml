@@ -1,10 +1,41 @@
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: dap-chuot-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dapchuot}
+      POSTGRES_USER: ${POSTGRES_USER:-dapchuot}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Thiếu POSTGRES_PASSWORD trong file .env (xem .env.example)}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    # Không mở cổng ra ngoài máy: chỉ dịch vụ app truy cập được database
+
   app:
     build: .
     image: dap-chuot:latest
     container_name: dap-chuot-app
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
       - "3000:3000"
     environment:
       PORT: "3000"
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: ${POSTGRES_DB:-dapchuot}
+      PGUSER: ${POSTGRES_USER:-dapchuot}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Thiếu POSTGRES_PASSWORD trong file .env (xem .env.example)}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      TRUST_PROXY: ${TRUST_PROXY:-false}
     restart: unless-stopped
+
+volumes:
+  db-data:

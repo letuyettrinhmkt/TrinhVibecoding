@@ -381,6 +381,68 @@ p { margin: 0; }
 
 .end-actions { margin-top: auto; display: flex; flex-direction: column; gap: var(--space-3); }
 
+/* ---------- v1.1: Đăng ký người chơi ---------- */
+.link-btn {
+  background: none; border: 0; padding: var(--space-1) var(--space-2);
+  font: inherit; font-size: var(--font-size-sm);
+  color: var(--color-text-link); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.link-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--color-focus-ring); }
+
+.greeting { display: flex; flex-direction: column; align-items: center; gap: var(--space-1); margin-top: var(--space-2); }
+.greeting .record-pill { margin-top: 0; }
+
+.server-alert {
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-2);
+  margin-top: var(--space-2);
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border-radius: var(--radius-xl);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+}
+.server-alert .btn { height: var(--control-height-md); padding: 0 var(--space-5); font-size: var(--font-size-sm); }
+
+.register-title { text-align: center; margin-top: var(--space-2); }
+.register-sub { text-align: center; font-size: var(--font-size-md); }
+.reg-form {
+  display: flex; flex-direction: column; gap: var(--space-3);
+  background: var(--color-surface);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-xs);
+}
+.field { display: flex; flex-direction: column; gap: var(--space-1); }
+.field > label:not(.consent) { font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary); }
+.field > label span { color: var(--color-danger); }
+.field input[type="text"], .field input[type="email"], .field input[type="tel"] {
+  height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: 16px;               /* ≥16px để iPhone không tự phóng to */
+  color: var(--color-text);
+  background: var(--color-surface);
+  transition: border-color var(--duration-fast) var(--easing-standard), box-shadow var(--duration-fast) var(--easing-standard);
+}
+.field input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-focus-ring); }
+.field.has-error input[type="text"], .field.has-error input[type="email"], .field.has-error input[type="tel"] { border-color: var(--color-danger); }
+.field-error { color: var(--color-danger); font-size: var(--font-size-xs); line-height: var(--line-height-xs); min-height: 0; }
+.field-error:empty { display: none; }
+.consent { display: flex; gap: var(--space-2); align-items: flex-start; font-size: var(--font-size-sm); line-height: var(--line-height-sm); color: var(--color-text-secondary); cursor: pointer; }
+.consent input { width: 20px; height: 20px; margin: 0; flex: 0 0 20px; accent-color: var(--color-primary); }
+.form-alert { background: var(--color-danger-bg); color: var(--color-danger); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); font-size: var(--font-size-sm); }
+.reg-actions { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); margin-top: var(--space-1); }
+
+/* Trạng thái lưu kết quả ở màn hình kết thúc */
+.save-status { text-align: center; font-size: var(--font-size-sm); min-height: var(--line-height-sm); color: var(--color-text-muted); }
+.save-status.is-ok { color: var(--color-success); font-weight: var(--font-weight-semibold); }
+.save-status.is-error, .save-status.is-error-final { color: var(--color-danger); }
+.save-status .link-btn { color: var(--color-danger); padding: 0 var(--space-1); }
+
 /* ---------- Giảm chuyển động ---------- */
 @media (prefers-reduced-motion: reduce) {
   .mole { transition: none; }

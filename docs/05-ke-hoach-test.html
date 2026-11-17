@@ -253,14 +253,14 @@
         <table>
           <thead><tr><th>Mã</th><th>Kiểm tra</th><th>Kết quả mong đợi</th></tr></thead>
           <tbody>
-            <tr><td class="id">SEC-01</td><td>Chạy <code>git status</code> và xem <code>.gitignore</code> sau khi có database và <code>.env</code>.</td><td>File <code>.db</code> và <code>.env</code> không xuất hiện để commit.</td></tr>
+            <tr><td class="id">SEC-01</td><td>Chạy <code>git status</code> và xem <code>.gitignore</code> sau khi có database và <code>.env</code>.</td><td><code>.env</code> và file CSV không xuất hiện để commit; <code>.env.example</code> có và không chứa mật khẩu thật.</td></tr>
             <tr><td class="id">SEC-02</td><td>Đọc log container sau khi đăng ký và tìm kiếm.</td><td>Log không chứa họ tên, email, SĐT, mật khẩu hay token.</td></tr>
-            <tr><td class="id">SEC-03</td><td>Mở database bằng công cụ SQLite, xem bảng <code>player_tokens</code>.</td><td>Chỉ có mã băm, không có token gốc.</td></tr>
+            <tr><td class="id">SEC-03</td><td>Xem bảng <code>player_tokens</code> bằng <code>docker compose exec db psql -U dapchuot -d dapchuot -c "SELECT * FROM player_tokens"</code>.</td><td>Chỉ có mã băm, không có token gốc.</td></tr>
             <tr><td class="id">SEC-04</td><td>Gửi <code>DELETE /api/admin/players/1</code> từ một trang web khác (Origin khác) khi admin đang đăng nhập.</td><td>Bị từ chối (403); dữ liệu không đổi.</td></tr>
             <tr><td class="id">SEC-05</td><td>Gọi 11 lần đăng ký trong 1 phút từ cùng IP.</td><td>Lần 11 nhận 429.</td></tr>
             <tr><td class="id">SEC-06</td><td>Họ tên đã lưu chứa <code>&lt;script&gt;</code> (chèn thẳng vào DB), mở trang admin.</td><td>Hiện dạng chữ, không chạy script.</td></tr>
             <tr><td class="id">DATA-01</td><td>Đăng ký, chơi, rồi <code>docker compose up -d --build</code>.</td><td>Dữ liệu còn nguyên sau khi build lại.</td></tr>
-            <tr><td class="id">DATA-02</td><td>Xoá file database, khởi động lại.</td><td>Server tự tạo database trống, không lỗi.</td></tr>
+            <tr><td class="id">DATA-02</td><td>Xoá volume dữ liệu (<code>docker compose down -v</code>), khởi động lại.</td><td>PostgreSQL tạo database trống, server tự tạo bảng, không lỗi.</td></tr>
           </tbody>
         </table>
       </div>

@@ -1,4 +1,4 @@
-# Chỉ cần server/, app/, design/ trong image
+# Image chỉ cần server/, app/, design/, admin/
 .git
 .gitignore
 .claude
@@ -9,10 +9,18 @@ docker-compose*.yml
 .dockerignore
 
 node_modules
+**/node_modules
 npm-debug.log*
 *.log
+
+# Bí mật và dữ liệu: không đưa vào image
 .env
 .env.*
+*.db
+*.db-*
+*.sqlite
+pgdata
+*.csv
 
 .DS_Store
 Thumbs.db

@@ -198,7 +198,8 @@
         <table>
           <thead><tr><th>Tên</th><th>Giá trị</th><th>Ý nghĩa</th></tr></thead>
           <tbody>
-            <tr><td><code>DB_PATH</code></td><td><code>/data/dap-chuot.db</code></td><td>File SQLite, nằm trong Docker volume <code>dap-chuot-data</code> để không mất khi build lại container.</td></tr>
+            <tr><td><code>POSTGRES_DB</code>, <code>POSTGRES_USER</code>, <code>POSTGRES_PASSWORD</code></td><td>Từ file <code>.env</code></td><td>Database PostgreSQL 16 (dịch vụ <code>db</code>), dữ liệu trong volume <code>db-data</code> để không mất khi build lại container. Dịch vụ <code>app</code> kết nối qua <code>PGHOST=db</code>. Cổng 5432 không mở ra ngoài máy.</td></tr>
+            <tr><td><code>TRUST_PROXY</code></td><td><code>true</code> khi chạy sau ngrok</td><td>Lấy IP thật từ <code>X-Forwarded-For</code> (cho giới hạn số lần) và bật cookie <code>Secure</code> khi truy cập qua HTTPS.</td></tr>
             <tr><td><code>ADMIN_USERNAME</code>, <code>ADMIN_PASSWORD</code></td><td>Từ file <code>.env</code></td><td>Tài khoản admin duy nhất. <code>.env</code> đã nằm trong <code>.gitignore</code>; repo chỉ có <code>.env.example</code> không chứa mật khẩu thật. Mật khẩu tối thiểu 12 ký tự, nếu ngắn hơn server từ chối khởi động trang admin.</td></tr>
             <tr><td><code>ADMIN_SESSION_HOURS</code></td><td>8</td><td>Thời hạn phiên đăng nhập admin.</td></tr>
             <tr><td><code>ADMIN_MAX_FAILS</code> / <code>ADMIN_LOCK_MINUTES</code></td><td>5 / 15</td><td>Sai mật khẩu 5 lần liên tiếp từ một IP → khoá 15 phút.</td></tr>
@@ -282,7 +283,8 @@
     </section>
 
     <section class="card" id="v11-du-lieu">
-      <h2>Mô hình dữ liệu SQLite</h2>
+      <h2>Mô hình dữ liệu PostgreSQL</h2>
+      <p class="callout brand" style="display:block">Đổi từ SQLite sang <strong>PostgreSQL 16</strong> ngày 17/11/2026. Kiểu thực tế: <code>id</code> là <code>SERIAL</code>, các cột thời gian là <code>TIMESTAMPTZ</code> (lưu UTC, hiển thị giờ Việt Nam); các ràng buộc giữ nguyên như bảng dưới.</p>
       <h3>Bảng <code>players</code></h3>
       <div class="table-wrap">
         <table>
@@ -321,7 +323,7 @@
           </tbody>
         </table>
       </div>
-      <p>Bật <code>PRAGMA foreign_keys = ON</code> và <code>journal_mode = WAL</code>. Phiên đăng nhập admin giữ trong bộ nhớ server (khởi động lại server thì admin đăng nhập lại).</p>
+      <p>Khoá ngoại có <code>ON DELETE CASCADE</code>; server tự chạy <code>CREATE TABLE IF NOT EXISTS</code> khi khởi động (chờ database sẵn sàng, thử lại tối đa 30 lần). Phiên đăng nhập admin giữ trong bộ nhớ server (khởi động lại server thì admin đăng nhập lại).</p>
     </section>
 
     <section class="card" id="v11-api">
@@ -349,7 +351,7 @@
       <h2>Bảo mật và dữ liệu cá nhân</h2>
       <ul>
         <li>Họ tên, email, số điện thoại là <strong>dữ liệu cá nhân</strong>: chỉ hiện trong trang admin, không trả về qua API công khai, không ghi vào log server (log chỉ ghi đường dẫn và mã trạng thái, không ghi thân yêu cầu hay query <code>q</code>).</li>
-        <li>File database và file <code>.env</code> không được commit lên Git (bổ sung <code>*.db</code>, <code>*.db-*</code> vào <code>.gitignore</code> và <code>.dockerignore</code>).</li>
+        <li>File <code>.env</code> (mật khẩu database, admin) không được commit lên Git; repo chỉ có <code>.env.example</code>. Dữ liệu PostgreSQL nằm trong Docker volume, không nằm trong thư mục dự án; <code>.gitignore</code> vẫn chặn <code>*.db</code>, file CSV xuất ra.</li>
         <li>Link ngrok là công khai: trang <code>/admin</code> cũng truy cập được qua link đó nên mật khẩu admin phải đủ mạnh (R-29, ≥ 12 ký tự).</li>
         <li>File CSV tải về chứa dữ liệu cá nhân: người tải chịu trách nhiệm lưu giữ an toàn.</li>
         <li>Người chơi muốn xoá dữ liệu: liên hệ admin, admin xoá bằng F-21.</li>

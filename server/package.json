@@ -1,13 +1,16 @@
 {
   "name": "dap-chuot-server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "description": "Server tĩnh nhỏ phục vụ game Đập Chuột",
+  "description": "Server game Đập Chuột: phục vụ game, API đăng ký người chơi và trang admin (PostgreSQL)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
   }
 }

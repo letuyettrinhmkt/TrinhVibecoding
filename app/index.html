@@ -121,8 +121,51 @@
       <p class="game-rule">Bấm trúng chuột để ghi điểm.<br>Bạn có 30 giây!</p>
       <p class="rule-black"><svg viewBox="0 0 64 56" aria-hidden="true"><use href="#bcat"/></svg> Né mèo đen — đập trúng bị <b>−1 điểm</b></p>
       <p class="record-pill" id="start-best" hidden>🏆 Kỷ lục: <span id="start-best-value">0</span></p>
+      <div class="greeting" id="start-greeting" hidden>
+        <p class="record-pill">👋 Xin chào, <span id="start-player-name"></span>!</p>
+        <button class="link-btn" id="btn-not-me" type="button">Không phải tôi?</button>
+      </div>
+      <div class="server-alert" id="start-server-alert" hidden role="alert">
+        <p id="start-server-msg">Không kết nối được máy chủ, chưa thể đăng ký để chơi.</p>
+        <button class="btn btn-outline" id="btn-retry-server" type="button">Thử lại</button>
+      </div>
     </div>
-    <button class="btn btn-primary btn-block" id="btn-start" type="button">Bắt đầu</button>
+    <button class="btn btn-primary btn-block" id="btn-start" type="button" disabled>Đang kết nối…</button>
+  </section>
+
+  <!-- F. Màn hình đăng ký (v1.1) -->
+  <section class="screen screen-register" id="screen-register" hidden aria-labelledby="register-title">
+    <h1 class="game-title register-title" id="register-title">Đăng ký</h1>
+    <p class="game-rule register-sub">Nhập thông tin để bắt đầu chơi</p>
+    <form class="reg-form" id="reg-form" novalidate>
+      <p class="form-alert" id="reg-alert" hidden role="alert"></p>
+      <div class="field">
+        <label for="reg-name">Họ tên <span aria-hidden="true">*</span></label>
+        <input id="reg-name" name="fullName" type="text" autocomplete="name" maxlength="60" required aria-describedby="err-fullName">
+        <p class="field-error" id="err-fullName"></p>
+      </div>
+      <div class="field">
+        <label for="reg-email">Email <span aria-hidden="true">*</span></label>
+        <input id="reg-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required aria-describedby="err-email">
+        <p class="field-error" id="err-email"></p>
+      </div>
+      <div class="field">
+        <label for="reg-phone">Số điện thoại <span aria-hidden="true">*</span></label>
+        <input id="reg-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" required aria-describedby="err-phone">
+        <p class="field-error" id="err-phone"></p>
+      </div>
+      <div class="field">
+        <label class="consent" for="reg-consent">
+          <input id="reg-consent" name="consent" type="checkbox" aria-describedby="err-consent">
+          <span>Tôi đồng ý cho lưu họ tên, email, số điện thoại để quản lý người chơi và kết quả.</span>
+        </label>
+        <p class="field-error" id="err-consent"></p>
+      </div>
+      <div class="reg-actions">
+        <button class="btn btn-primary btn-block" id="btn-register" type="submit">Đăng ký &amp; chơi</button>
+        <button class="link-btn" id="btn-register-back" type="button">← Quay lại</button>
+      </div>
+    </form>
   </section>
 
   <!-- B/C/D. Màn hình chơi (đếm ngược, đang chơi, tạm dừng) -->
@@ -161,6 +204,10 @@
       <p class="badge-new" id="end-new-best" hidden>🎉 Kỷ lục mới!</p>
       <p class="result-best">Kỷ lục: <span id="end-best">0</span></p>
     </div>
+    <div class="save-status" id="save-status" aria-live="polite">
+      <span id="save-text"></span>
+      <button class="link-btn" id="btn-save-retry" type="button" hidden>Thử lại</button>
+    </div>
     <div class="stats">
       <div class="stat"><b id="end-hits">0</b><span>Trúng</span></div>
       <div class="stat"><b id="end-misses">0</b><span>Trượt</span></div>
@@ -175,6 +222,7 @@
 
 </div>
 
+<script src="validate.js"></script>
 <script src="game.js"></script>
 <script src="petals.js"></script>
 </body>
