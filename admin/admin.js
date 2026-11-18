@@ -13,7 +13,7 @@
   }
 
   function api(method, path, body) {
-    var opts = { method: method, credentials: 'same-origin', headers: { 'Accept': 'application/json' } };
+    var opts = { method: method, credentials: 'same-origin', headers: { 'Accept': 'application/json', 'ngrok-skip-browser-warning': '1' } };
     if (body !== undefined) {
       opts.headers['Content-Type'] = 'application/json';
       opts.body = JSON.stringify(body);

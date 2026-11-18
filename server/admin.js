@@ -18,6 +18,9 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 const SESSION_HOURS = Number(process.env.ADMIN_SESSION_HOURS) || 8;
 const MAX_FAILS = 5;
 const LOCK_MINUTES = 15;
+// Giới hạn chung cho mọi IP: chặn dò mật khẩu bằng cách đổi IP liên tục
+const GLOBAL_MAX_FAILS = 30;
+const GLOBAL_WINDOW_MS = 15 * 60 * 1000;
 const PAGE_SIZE = 20;
 const COOKIE = 'admin_session';
 
@@ -28,6 +31,13 @@ if (!configured) {
 
 const sessions = new Map(); // sessionId -> hết hạn (ms)
 const fails = new Map();    // ip -> { count, lockedUntil }
+let globalFails = [];       // thời điểm các lần đăng nhập sai gần đây, mọi IP
+
+function recentGlobalFails() {
+  const now = Date.now();
+  globalFails = globalFails.filter((t) => now - t < GLOBAL_WINDOW_MS);
+  return globalFails.length;
+}
 
 setInterval(() => {
   const now = Date.now();
@@ -66,6 +76,9 @@ async function login(req, res) {
     const minutes = Math.ceil((f.lockedUntil - Date.now()) / 60000);
     throw new HttpError(429, `Đăng nhập sai quá nhiều lần, thử lại sau ${minutes} phút`);
   }
+  if (recentGlobalFails() >= GLOBAL_MAX_FAILS) {
+    throw new HttpError(429, 'Đăng nhập admin đang tạm khoá do có nhiều lần thử sai, thử lại sau 15 phút');
+  }
   const body = await readJson(req);
   const okUser = safeEqual(body.username || '', ADMIN_USERNAME);
   const okPass = safeEqual(body.password || '', ADMIN_PASSWORD);
@@ -73,6 +86,7 @@ async function login(req, res) {
     const next = { count: (f ? f.count : 0) + 1, lockedUntil: 0 };
     if (next.count >= MAX_FAILS) next.lockedUntil = Date.now() + LOCK_MINUTES * 60 * 1000;
     fails.set(ip, next);
+    globalFails.push(Date.now());
     console.warn(`Đăng nhập admin thất bại (lần ${next.count})`);
     throw new HttpError(401, 'Tên đăng nhập hoặc mật khẩu không đúng');
   }

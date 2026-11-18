@@ -1,0 +1,4 @@
+# File chạy trên máy ảo Linux: luôn giữ xuống dòng kiểu LF
+*.sh             text eol=lf
+deploy/Caddyfile text eol=lf
+*.yml            text eol=lf

@@ -58,6 +58,19 @@ Mini game phản xạ chạy trên trình duyệt: lưới 3×3, 30 giây, đậ
 - Nếu cổng 3000 đã bị chiếm, đổi `"3000:3000"` trong `docker-compose.yml` thành ví dụ `"8080:3000"`.
 - Bản GitHub Pages / mở file trực tiếp không có server nên **không đăng ký được** và game sẽ báo "Không kết nối được máy chủ".
 
+## Deploy lên máy chủ (HTTPS + tên miền)
+
+Kế hoạch đầy đủ cho Google Cloud Free Tier: `docs/06-ke-hoach-deploy.html`.
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+```
+
+- Thêm Caddy (`deploy/Caddyfile`) tự xin HTTPS cho `SITE_DOMAIN` (mặc định `catxe.io.vn`), mở cổng 80/443; app không còn mở cổng 3000 ra ngoài.
+- Giới hạn RAM cho máy 1 GB: db 256 MB, app 192 MB, caddy 64 MB. Cần Docker Compose ≥ 2.24.
+- Thử trên máy local: `SITE_DOMAIN=localhost docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d` rồi mở https://localhost (chứng chỉ tự ký, trình duyệt sẽ cảnh báo).
+- Sao lưu database: `bash deploy/backup.sh` (mặc định lưu vào `~/backups`, giữ 7 bản).
+
 ## Cách chơi
 
 - Bấm "Bắt đầu" → lần đầu nhập họ tên, email, số điện thoại và đồng ý lưu thông tin. Trình duyệt nhớ người chơi cho lần sau ("Không phải tôi?" để đổi người).

@@ -6,6 +6,7 @@ docs
 *.md
 Dockerfile
 docker-compose*.yml
+deploy
 .dockerignore
 
 node_modules

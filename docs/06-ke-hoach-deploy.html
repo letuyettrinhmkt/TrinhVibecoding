@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kế hoạch deploy — Đập Chuột</title>
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><span class="brand-mark"><svg width="20" height="20" viewBox="0 0 64 56" aria-hidden="true"><circle cx="14" cy="14" r="11" fill="#fff"/><circle cx="50" cy="14" r="11" fill="#fff"/><ellipse cx="32" cy="34" rx="22" ry="20" fill="#fff"/></svg></span>Đập Chuột · Tài liệu</a>
+    <span class="meta">Phiên bản 1.1</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidenav" aria-label="Mục lục tài liệu">
+    <div class="sidenav-title">Tài liệu</div>
+    <a href="index.html"><span class="num">·</span>Mục lục</a>
+    <a href="01-tong-quan.html"><span class="num">01</span>Tổng quan</a>
+    <a href="02-chuc-nang.html"><span class="num">02</span>Chức năng</a>
+    <a href="03-man-hinh.html"><span class="num">03</span>Màn hình</a>
+    <a href="04-quy-tac-du-lieu.html"><span class="num">04</span>Quy tắc &amp; dữ liệu</a>
+    <a href="05-ke-hoach-test.html"><span class="num">05</span>Kế hoạch test</a>
+    <a href="06-ke-hoach-deploy.html" aria-current="page"><span class="num">06</span>Kế hoạch deploy</a>
+  </nav>
+
+  <main>
+    <div class="page-head">
+      <span class="eyebrow">06 · Kế hoạch deploy</span>
+      <h1>Đưa game lên Google Cloud</h1>
+      <p class="lead">Chạy đúng bộ Docker Compose hiện có trên <strong>một máy ảo Compute Engine e2-micro</strong> thuộc gói miễn phí (Free Tier), phục vụ qua tên miền <code>https://catxe.io.vn</code>. Đây là bản kế hoạch: <strong>chưa có lệnh nào được chạy, chưa tạo tài nguyên nào.</strong></p>
+    </div>
+
+    <div class="callout warn">
+      <p><strong>Trước khi bắt đầu:</strong> giá và hạn mức Free Tier do Google thay đổi theo thời gian. Mọi con số dưới đây cần được đối chiếu lại với trang <a href="https://cloud.google.com/free/docs/free-cloud-features#compute">Free Tier của Compute Engine</a> và <a href="https://cloud.google.com/vpc/network-pricing">bảng giá mạng</a> vào ngày deploy. Chỗ nào chưa chắc chắn được đánh dấu <span class="badge badge-warn">cần xác nhận</span>.</p>
+    </div>
+
+    <!-- ============================================================ -->
+    <section class="card" id="so-do">
+      <h2>1. Sơ đồ</h2>
+      <p>Toàn bộ hệ thống nằm trong một máy ảo. Bên ngoài chỉ thấy cổng 80 và 443; app (3000) và database (5432) chỉ nói chuyện với nhau trong mạng nội bộ của Docker.</p>
+
+      <div class="table-wrap" style="padding: var(--space-4); background: var(--color-surface)">
+        <svg viewBox="0 0 760 430" width="100%" role="img" aria-label="Sơ đồ: người chơi truy cập catxe.io.vn qua DNS tới IP tĩnh, qua tường lửa Google Cloud vào máy ảo e2-micro chạy Caddy, app và PostgreSQL bằng Docker Compose" style="max-width: 760px; display:block; margin: 0 auto; font-family: inherit">
+          <defs>
+            <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--color-text-muted)"/></marker>
+          </defs>
+
+          <!-- Người chơi -->
+          <rect x="10" y="40" width="150" height="64" rx="12" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="2"/>
+          <text x="85" y="66" text-anchor="middle" font-size="14" font-weight="700" fill="var(--color-text)">Người chơi / Admin</text>
+          <text x="85" y="86" text-anchor="middle" font-size="12" fill="var(--color-text-secondary)">trình duyệt</text>
+
+          <!-- DNS -->
+          <rect x="10" y="150" width="150" height="64" rx="12" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="2"/>
+          <text x="85" y="176" text-anchor="middle" font-size="14" font-weight="700" fill="var(--color-text)">DNS tên miền</text>
+          <text x="85" y="196" text-anchor="middle" font-size="12" fill="var(--color-text-secondary)">A: catxe.io.vn → IP tĩnh</text>
+          <line x1="85" y1="104" x2="85" y2="148" stroke="var(--color-text-muted)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#ar)"/>
+          <text x="92" y="130" font-size="11" fill="var(--color-text-muted)">1. hỏi IP</text>
+
+          <!-- Mũi tên HTTPS -->
+          <line x1="160" y1="72" x2="268" y2="72" stroke="var(--color-text-muted)" stroke-width="2" marker-end="url(#ar)"/>
+          <text x="214" y="64" text-anchor="middle" font-size="11" fill="var(--color-text-muted)">2. HTTPS :443</text>
+
+          <!-- Vùng Google Cloud -->
+          <rect x="270" y="10" width="480" height="410" rx="16" fill="none" stroke="var(--color-brand-300)" stroke-width="2" stroke-dasharray="6 5"/>
+          <text x="286" y="32" font-size="12" font-weight="700" fill="var(--color-brand-700)">Google Cloud · project riêng · us-central1</text>
+
+          <!-- Firewall -->
+          <rect x="286" y="46" width="448" height="50" rx="10" fill="var(--color-warning-bg)" stroke="var(--color-warning)" stroke-width="2"/>
+          <text x="510" y="67" text-anchor="middle" font-size="13" font-weight="700" fill="#8A5B00">Tường lửa VPC + IP tĩnh</text>
+          <text x="510" y="85" text-anchor="middle" font-size="11.5" fill="#8A5B00">Mở 80, 443 cho mọi nơi · 22 chỉ từ IAP 35.235.240.0/20 · còn lại chặn</text>
+
+          <!-- VM -->
+          <rect x="286" y="110" width="448" height="296" rx="12" fill="var(--color-bg-subtle)" stroke="var(--color-border)" stroke-width="2"/>
+          <text x="302" y="132" font-size="13" font-weight="700" fill="var(--color-text)">Máy ảo e2-micro · Debian 12 · 1 GB RAM + 2 GB swap</text>
+          <text x="302" y="150" font-size="11.5" fill="var(--color-text-secondary)">Đĩa standard 30 GB · Docker Compose</text>
+
+          <!-- Caddy -->
+          <rect x="302" y="168" width="130" height="78" rx="10" fill="var(--color-bg-accent)" stroke="var(--color-brand-300)" stroke-width="2"/>
+          <text x="367" y="194" text-anchor="middle" font-size="13" font-weight="700" fill="var(--color-brand-700)">caddy</text>
+          <text x="367" y="212" text-anchor="middle" font-size="11" fill="var(--color-brand-700)">:80 :443 · HTTPS</text>
+          <text x="367" y="230" text-anchor="middle" font-size="11" fill="var(--color-brand-700)">RAM ≤ 64 MB</text>
+
+          <!-- App -->
+          <rect x="452" y="168" width="130" height="78" rx="10" fill="var(--color-bg-accent)" stroke="var(--color-brand-300)" stroke-width="2"/>
+          <text x="517" y="194" text-anchor="middle" font-size="13" font-weight="700" fill="var(--color-brand-700)">app (Node)</text>
+          <text x="517" y="212" text-anchor="middle" font-size="11" fill="var(--color-brand-700)">:3000 · nội bộ</text>
+          <text x="517" y="230" text-anchor="middle" font-size="11" fill="var(--color-brand-700)">RAM ≤ 192 MB</text>
+
+          <!-- DB -->
+          <rect x="602" y="168" width="118" height="78" rx="10" fill="var(--color-bg-accent)" stroke="var(--color-brand-300)" stroke-width="2"/>
+          <text x="661" y="194" text-anchor="middle" font-size="13" font-weight="700" fill="var(--color-brand-700)">db (Postgres)</text>
+          <text x="661" y="212" text-anchor="middle" font-size="11" fill="var(--color-brand-700)">:5432 · nội bộ</text>
+          <text x="661" y="230" text-anchor="middle" font-size="11" fill="var(--color-brand-700)">RAM ≤ 256 MB</text>
+
+          <line x1="432" y1="207" x2="450" y2="207" stroke="var(--color-text-muted)" stroke-width="2" marker-end="url(#ar)"/>
+          <line x1="582" y1="207" x2="600" y2="207" stroke="var(--color-text-muted)" stroke-width="2" marker-end="url(#ar)"/>
+          <line x1="367" y1="96" x2="367" y2="166" stroke="var(--color-text-muted)" stroke-width="2" marker-end="url(#ar)"/>
+
+          <!-- Volume -->
+          <rect x="602" y="270" width="118" height="54" rx="10" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="2"/>
+          <text x="661" y="293" text-anchor="middle" font-size="12" font-weight="700" fill="var(--color-text)">volume db-data</text>
+          <text x="661" y="311" text-anchor="middle" font-size="11" fill="var(--color-text-secondary)">dữ liệu người chơi</text>
+          <line x1="661" y1="246" x2="661" y2="268" stroke="var(--color-text-muted)" stroke-width="2" marker-end="url(#ar)"/>
+
+          <!-- Volume caddy -->
+          <rect x="302" y="270" width="130" height="54" rx="10" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="2"/>
+          <text x="367" y="293" text-anchor="middle" font-size="12" font-weight="700" fill="var(--color-text)">volume caddy-data</text>
+          <text x="367" y="311" text-anchor="middle" font-size="11" fill="var(--color-text-secondary)">chứng chỉ HTTPS</text>
+          <line x1="367" y1="246" x2="367" y2="268" stroke="var(--color-text-muted)" stroke-width="2" marker-end="url(#ar)"/>
+
+          <!-- Backup -->
+          <rect x="452" y="340" width="268" height="52" rx="10" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="2" stroke-dasharray="4 4"/>
+          <text x="586" y="362" text-anchor="middle" font-size="12" font-weight="700" fill="var(--color-text)">cron: pg_dump mỗi đêm → ~/backups</text>
+          <text x="586" y="380" text-anchor="middle" font-size="11" fill="var(--color-text-secondary)">tải về máy cá nhân định kỳ</text>
+        </svg>
+      </div>
+
+      <h3>Vì sao chọn cách này</h3>
+      <ul>
+        <li><strong>Không phải sửa code game:</strong> dùng lại <code>Dockerfile</code> và <code>docker-compose.yml</code> đã chạy ổn trên máy local.</li>
+        <li><strong>Caddy</strong> là reverse proxy nhỏ (vài chục MB RAM), tự xin và gia hạn chứng chỉ Let's Encrypt miễn phí cho <code>catxe.io.vn</code>. Không cần Load Balancer của Google (có tính phí).</li>
+        <li><strong>Không dùng Cloud SQL:</strong> Cloud SQL không có trong Free Tier. PostgreSQL chạy trong container trên chính máy ảo.</li>
+      </ul>
+
+      <h3>File deploy trong repo <span class="badge badge-new">đã tạo, đã test local</span></h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>File</th><th>Nội dung</th></tr></thead>
+          <tbody>
+            <tr><td><code>docker-compose.prod.yml</code></td><td>Ghép đè lên file gốc: thêm dịch vụ <code>caddy</code>; bỏ cổng <code>3000</code> ra ngoài của app (<code>ports: !reset []</code>, cần Docker Compose ≥ 2.24); giới hạn RAM cho cả 3 dịch vụ; giới hạn dung lượng log.</td></tr>
+            <tr><td><code>deploy/Caddyfile</code></td><td>HTTPS tự động cho <code>catxe.io.vn</code> (đổi được qua biến <code>SITE_DOMAIN</code>), nén gzip, header HSTS, chuyển <code>www.catxe.io.vn</code> về tên miền chính.</td></tr>
+            <tr><td><code>deploy/backup.sh</code></td><td>Chạy <code>pg_dump</code> trong container db, nén, giữ 7 bản gần nhất (đổi bằng <code>KEEP</code>), thư mục chỉ chủ máy đọc được.</td></tr>
+            <tr><td><code>.gitattributes</code></td><td>Giữ xuống dòng kiểu Linux (LF) cho <code>*.sh</code>, <code>Caddyfile</code>, <code>*.yml</code> khi commit từ Windows.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <section class="card" id="cau-hinh">
+      <h2>2. Cấu hình Free Tier</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Hạng mục</th><th>Chọn</th><th>Điều kiện để miễn phí</th></tr></thead>
+          <tbody>
+            <tr><td>Loại máy</td><td><code>e2-micro</code> (2 vCPU dùng chung, 1 GB RAM)</td><td>Chỉ <strong>1 máy</strong> e2-micro mỗi tháng cho cả tài khoản thanh toán. Tạo máy thứ hai là bị tính tiền.</td></tr>
+            <tr><td>Vùng</td><td><code>us-central1</code> (Iowa), zone <code>us-central1-a</code></td><td>Chỉ <code>us-west1</code>, <code>us-central1</code>, <code>us-east1</code> được miễn phí. Không chọn <code>asia-southeast1</code> dù gần Việt Nam hơn.</td></tr>
+            <tr><td>Đĩa khởi động</td><td><strong>Standard persistent disk</strong> (<code>pd-standard</code>), 30 GB</td><td>Free Tier là 30 GB-tháng đĩa <em>standard</em>. Giao diện tạo máy mặc định chọn <strong>Balanced</strong> — loại này <strong>có tính phí</strong>, phải đổi tay.</td></tr>
+            <tr><td>Hệ điều hành</td><td>Debian 12</td><td>Ảnh hệ điều hành công khai, không mất phí bản quyền.</td></tr>
+            <tr><td>IP</td><td>IP ngoài <strong>tĩnh</strong> (reserved), cùng vùng <code>us-central1</code>, gắn vào máy</td><td>IP tĩnh <strong>không gắn vào máy nào</strong> chắc chắn bị tính phí. IPv4 đang dùng: <span class="badge badge-warn">cần xác nhận</span> — xem mục 4.</td></tr>
+            <tr><td>Cổng mở</td><td>80, 443 (mọi nguồn) · 22 (chỉ từ IAP)</td><td>Tường lửa VPC không tính phí.</td></tr>
+            <tr><td>Lưu lượng ra Internet</td><td>Network tier mặc định (Premium)</td><td>Free Tier: 1 GB/tháng từ Bắc Mỹ đi mọi nơi (trừ Trung Quốc, Úc). Trang game nặng khoảng 85 KB → đủ cho vài nghìn lượt mở trang/tháng.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout"><p>Người chơi ở Việt Nam sẽ có độ trễ khoảng 200 ms tới Iowa. Game xử lý vòng chơi ngay trong trình duyệt, chỉ gọi máy chủ khi đăng ký và khi lưu điểm, nên độ trễ này không ảnh hưởng tới cảm giác chơi.</p></div>
+    </section>
+
+    <!-- ============================================================ -->
+    <section class="card" id="ram">
+      <h2>3. Máy chỉ có 1 GB RAM</h2>
+      <p>Debian + Docker đã chiếm khoảng 250–300 MB. Nếu không giới hạn, PostgreSQL và lúc build image Node có thể đẩy máy vào tình trạng hết RAM, Linux sẽ giết tiến trình ngẫu nhiên (OOM killer).</p>
+
+      <h3>Thêm 2 GB swap</h3>
+      <p>Swap là file trên đĩa dùng như RAM dự phòng. Chậm hơn RAM nhiều, nhưng giúp máy không sập khi bị dồn tải ngắn (ví dụ lúc <code>docker compose build</code>). Swap nằm trong 30 GB đĩa, không phát sinh chi phí.</p>
+      <pre><code>sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+# Chỉ dùng swap khi thật cần
+echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swap.conf
+sudo sysctl --system</code></pre>
+
+      <h3>Ngân sách RAM</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Thành phần</th><th>Giới hạn</th><th>Cách đặt</th></tr></thead>
+          <tbody>
+            <tr><td>Hệ điều hành + Docker</td><td>~300 MB</td><td>—</td></tr>
+            <tr><td>db (PostgreSQL)</td><td><strong>256 MB</strong></td><td><code>mem_limit: 256m</code> và chạy với <code>shared_buffers=32MB</code>, <code>work_mem=2MB</code>, <code>max_connections=20</code>. Dữ liệu game rất nhỏ nên vẫn đủ nhanh.</td></tr>
+            <tr><td>app (Node)</td><td>192 MB</td><td><code>mem_limit: 192m</code>, biến môi trường <code>NODE_OPTIONS=--max-old-space-size=128</code></td></tr>
+            <tr><td>caddy</td><td>64 MB</td><td><code>mem_limit: 64m</code></td></tr>
+            <tr><td>Còn trống</td><td>~200 MB</td><td>Đệm cho SSH, cron, pg_dump</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Phần ghép đè trong <code>docker-compose.prod.yml</code> (bản phác thảo):</p>
+      <pre><code>services:
+  db:
+    mem_limit: 256m
+    command: ["postgres", "-c", "shared_buffers=32MB", "-c", "work_mem=2MB",
+              "-c", "max_connections=20"]
+    logging: { driver: json-file, options: { max-size: "10m", max-file: "3" } }
+  app:
+    ports: !reset []          # không mở 3000 ra ngoài, chỉ Caddy gọi vào
+    mem_limit: 192m
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=128"
+      TRUST_PROXY: "true"
+    logging: { driver: json-file, options: { max-size: "10m", max-file: "3" } }
+  caddy:
+    image: caddy:2-alpine
+    depends_on: [app]
+    ports: ["80:80", "443:443"]
+    volumes: ["./deploy/Caddyfile:/etc/caddy/Caddyfile:ro", "caddy-data:/data"]
+    mem_limit: 64m
+    restart: unless-stopped
+volumes:
+  caddy-data:</code></pre>
+    </section>
+
+    <!-- ============================================================ -->
+    <section class="card" id="cac-buoc">
+      <h2>4. Các bước deploy và cách kiểm tra</h2>
+      <p>Làm lần lượt, bước trước đạt mới sang bước sau. Lệnh <code>gcloud</code> chạy trên máy cá nhân (cần cài Google Cloud CLI) hoặc trong Cloud Shell trên trình duyệt (không cần cài). Lệnh trên máy ảo chạy qua SSH.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Bước</th><th>Làm gì</th><th>Kiểm tra đạt khi</th></tr></thead>
+          <tbody>
+            <tr><td class="id">D-01</td><td><strong>Đăng nhập và tạo project riêng</strong> cho game, ví dụ <code>catxe-game</code>. Liên kết tài khoản thanh toán (bắt buộc kể cả khi dùng Free Tier). Bật Compute Engine API.<br><code>gcloud projects create catxe-game</code><br><code>gcloud config set project catxe-game</code><br><code>gcloud billing projects link catxe-game --billing-account=XXXXXX-XXXXXX-XXXXXX</code><br><code>gcloud services enable compute.googleapis.com</code></td><td><code>gcloud billing projects describe catxe-game</code> trả về <code>billingEnabled: true</code>.</td></tr>
+            <tr><td class="id">D-02</td><td><strong>Đặt cảnh báo ngân sách</strong> 1 USD/tháng cho project, báo email ở 50%, 90%, 100% (Console → Billing → Budgets &amp; alerts).</td><td>Thấy budget trong danh sách. <em>Lưu ý: budget chỉ gửi cảnh báo, không tự chặn chi tiêu.</em></td></tr>
+            <tr><td class="id">D-03</td><td><strong>Giữ IP tĩnh</strong><br><code>gcloud compute addresses create catxe-ip --region=us-central1</code></td><td><code>gcloud compute addresses list</code> có <code>catxe-ip</code>, trạng thái <code>RESERVED</code>. Ghi lại địa chỉ IP.</td></tr>
+            <tr><td class="id">D-04</td><td><strong>Tường lửa</strong>: mở 80/443 cho máy có tag <code>web</code>; SSH chỉ từ dải IAP; xoá luật mặc định mở 22 và 3389 cho cả Internet.<br><code>gcloud compute firewall-rules create allow-web --allow=tcp:80,tcp:443 --target-tags=web</code><br><code>gcloud compute firewall-rules create allow-ssh-iap --allow=tcp:22 --source-ranges=35.235.240.0/20</code><br><code>gcloud compute firewall-rules delete default-allow-ssh default-allow-rdp</code></td><td><code>gcloud compute firewall-rules list</code> chỉ còn: <code>allow-web</code>, <code>allow-ssh-iap</code>, <code>default-allow-icmp</code>, <code>default-allow-internal</code>.</td></tr>
+            <tr><td class="id">D-05</td><td><strong>Tạo máy ảo</strong><br><code>gcloud compute instances create catxe-vm --zone=us-central1-a --machine-type=e2-micro --image-family=debian-12 --image-project=debian-cloud --boot-disk-size=30GB --boot-disk-type=pd-standard --address=catxe-ip --tags=web --metadata=enable-oslogin=TRUE --no-service-account --no-scopes</code></td><td><code>gcloud compute instances describe catxe-vm --zone=us-central1-a</code>: <code>machineType</code> kết thúc bằng <code>e2-micro</code>, <code>status: RUNNING</code>. Trong Console → Disks: loại <strong>Standard persistent disk</strong>, 30 GB.</td></tr>
+            <tr><td class="id">D-06</td><td><strong>SSH vào máy</strong><br><code>gcloud compute ssh catxe-vm --zone=us-central1-a --tunnel-through-iap</code><br>Cập nhật hệ điều hành và bật tự cập nhật bảo mật: <code>sudo apt update &amp;&amp; sudo apt -y upgrade &amp;&amp; sudo apt -y install unattended-upgrades git</code></td><td>Vào được dấu nhắc lệnh của máy ảo. Thử SSH thẳng không qua IAP phải bị chặn (hết thời gian chờ).</td></tr>
+            <tr><td class="id">D-07</td><td><strong>Thêm 2 GB swap</strong> theo mục 3.</td><td><code>free -h</code> hiện <code>Swap: 2.0Gi</code>. Khởi động lại máy, kiểm tra lại vẫn còn.</td></tr>
+            <tr><td class="id">D-08</td><td><strong>Cài Docker</strong> từ kho apt chính thức của Docker cho Debian (gồm <code>docker-compose-plugin</code>), thêm user vào nhóm <code>docker</code>.</td><td><code>docker compose version</code> ≥ 2.24 (cần cho <code>!reset</code>). <code>docker run --rm hello-world</code> chạy được.</td></tr>
+            <tr><td class="id">D-09</td><td><strong>Trỏ tên miền</strong>: tại trang quản lý DNS của nhà đăng ký <code>.vn</code>, tạo bản ghi <code>A catxe.io.vn → IP tĩnh</code> và <code>CNAME www → catxe.io.vn</code>, TTL 300. Làm trước bước D-11 để Caddy xin được chứng chỉ.</td><td><code>nslookup catxe.io.vn 8.8.8.8</code> trả đúng IP tĩnh (có thể chờ vài phút đến vài giờ).</td></tr>
+            <tr><td class="id">D-10</td><td><strong>Lấy code và tạo <code>.env</code></strong><br><code>git clone https://github.com/letuyettrinhmkt/TrinhVibecoding.git catxe &amp;&amp; cd catxe</code><br>Tạo <code>.env</code> từ <code>.env.example</code> bằng <code>nano</code>, sinh mật khẩu mới bằng <code>openssl rand -hex 24</code> (không dùng lại mật khẩu ở máy local), <code>TRUST_PROXY=true</code>. Sau đó <code>chmod 600 .env</code>.</td><td><code>docker compose -f docker-compose.yml -f docker-compose.prod.yml config</code> chạy không lỗi; app không còn mục <code>ports</code>; <code>ls -l .env</code> hiện <code>-rw-------</code>.</td></tr>
+            <tr><td class="id">D-11</td><td><strong>Build và chạy</strong><br><code>docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build</code></td><td><code>docker compose ... ps</code>: db và app <code>healthy</code>, caddy <code>Up</code>. <code>docker stats --no-stream</code>: mỗi container dưới giới hạn RAM. <code>docker compose logs caddy</code> có dòng chứng chỉ đã cấp cho <code>catxe.io.vn</code>.</td></tr>
+            <tr><td class="id">D-12</td><td><strong>Kiểm tra từ máy cá nhân</strong></td><td>
+              <ul style="margin:0; padding-left: 1.1em">
+                <li><code>https://catxe.io.vn</code> mở được game, có ổ khoá HTTPS.</li>
+                <li><code>http://catxe.io.vn</code> tự chuyển sang HTTPS.</li>
+                <li><code>https://catxe.io.vn/api/health</code> trả <code>{"ok":true}</code>.</li>
+                <li>Đăng ký, chơi 1 lượt, điểm hiện trong <code>/admin/</code>.</li>
+                <li><code>http://IP:3000</code> và cổng 5432 <strong>không</strong> kết nối được.</li>
+                <li>Thử trên điện thoại dùng 4G.</li>
+              </ul></td></tr>
+            <tr><td class="id">D-13</td><td><strong>Sao lưu</strong>: đặt cron chạy <code>bash deploy/backup.sh</code> lúc 3 giờ sáng (dòng cron mẫu có sẵn ở đầu file). Định kỳ tải bản sao lưu về máy bằng <code>gcloud compute scp --tunnel-through-iap</code>.</td><td>Sáng hôm sau có file trong <code>~/backups</code>; thử khôi phục vào một database tạm trên máy local.</td></tr>
+            <tr><td class="id">D-14</td><td><strong>Soát chi phí</strong> sau 24–48 giờ: Console → Billing → Reports, lọc theo project, nhóm theo <em>SKU</em>.</td><td>Tổng chi phí 0 đ (nếu có tín dụng dùng thử, xem cột <em>trước khi trừ tín dụng</em>). Có dòng nào khác 0 thì xử lý theo mục 5.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout brand"><p><strong>Cập nhật phiên bản game sau này:</strong> SSH vào máy → <code>cd catxe &amp;&amp; git pull</code> → chạy lại lệnh ở D-11 → kiểm tra lại D-12. Dữ liệu người chơi nằm trong volume nên không mất khi build lại.</p></div>
+    </section>
+
+    <!-- ============================================================ -->
+    <section class="card" id="chi-phi">
+      <h2>5. Khoản có thể bị tính phí và cách tránh</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Khoản</th><th>Khi nào bị tính</th><th>Cách tránh</th></tr></thead>
+          <tbody>
+            <tr><td>Máy ảo</td><td>Sai loại máy (không phải e2-micro), sai vùng, hoặc có từ 2 máy e2-micro trở lên chạy cùng lúc.</td><td>Kiểm tra D-05. Chỉ giữ 1 máy trong toàn bộ tài khoản thanh toán.</td></tr>
+            <tr><td>Đĩa</td><td>Chọn Balanced/SSD; tổng đĩa standard &gt; 30 GB; còn đĩa mồ côi sau khi xoá máy.</td><td>Dùng <code>--boot-disk-type=pd-standard</code>, đúng 30 GB. Thỉnh thoảng xem Console → Disks.</td></tr>
+            <tr><td>IP tĩnh để không</td><td>IP đã giữ nhưng không gắn máy nào (ví dụ đã xoá máy mà quên trả IP).</td><td>Xoá máy thì xoá luôn IP: <code>gcloud compute addresses delete catxe-ip --region=us-central1</code>.</td></tr>
+            <tr><td>IPv4 đang dùng <span class="badge badge-warn">cần xác nhận</span></td><td>Từ 2024 Google tính phí IPv4 ngoài kể cả khi đang gắn vào máy (khoảng vài USD/tháng). Chưa rõ máy e2-micro Free Tier có được miễn khoản này không.</td><td>Xem trang Free Tier ngày deploy và dòng <em>External IP</em> trong Billing Reports ở D-14. Nếu bị tính: đây là khoản không tránh được với mô hình 1 máy ảo có web công khai — cần quyết định chấp nhận hoặc đổi kiến trúc.</td></tr>
+            <tr><td>Lưu lượng ra</td><td>Vượt 1 GB/tháng (bị spam, bị bot quét, ảnh/video nặng).</td><td>Giữ trang nhẹ, bật nén <code>encode gzip</code> trong Caddy, theo dõi Billing Reports. Cảnh báo ngân sách ở D-02.</td></tr>
+            <tr><td>Snapshot / ảnh đĩa</td><td>Tạo snapshot vượt hạn mức miễn phí.</td><td>Không dùng snapshot; sao lưu bằng <code>pg_dump</code> (D-13) rồi tải về máy.</td></tr>
+            <tr><td>Load Balancer, Cloud SQL, Cloud NAT, Cloud Armor</td><td>Bật bất kỳ dịch vụ nào trong số này.</td><td>Không dùng. Caddy thay Load Balancer, Postgres trong container thay Cloud SQL.</td></tr>
+            <tr><td>Logging / Monitoring</td><td>Ghi log quá hạn mức miễn phí.</td><td>Không cài Ops Agent. Log nằm trong Docker, giới hạn 10 MB × 3 file mỗi dịch vụ.</td></tr>
+            <tr><td>Tín dụng dùng thử 300 USD</td><td>Tín dụng che mất chi phí thật; hết 90 ngày thì bắt đầu trừ tiền thật.</td><td>Ở D-14, luôn xem chi phí <em>trước khi trừ tín dụng</em>. Mục tiêu là 0 đ ngay cả khi không có tín dụng.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="xoa-sach">Xoá sạch sau khoá học</h3>
+      <ol>
+        <li><strong>Lấy dữ liệu về (nếu cần):</strong> chạy <code>deploy/backup.sh</code> lần cuối và tải file về máy. Bản này có email, số điện thoại người chơi — lưu nơi an toàn hoặc xoá hẳn nếu không còn mục đích sử dụng.</li>
+        <li><strong>Gỡ DNS:</strong> xoá bản ghi <code>A</code> và <code>CNAME www</code> của <code>catxe.io.vn</code> ở nhà đăng ký, tránh tên miền trỏ vào một IP sau này có thể thuộc về người khác.</li>
+        <li><strong>Xoá cả project</strong> (cách sạch nhất, dừng mọi chi phí, xoá máy, đĩa, IP, tường lửa cùng lúc):<br><code>gcloud projects delete catxe-game</code><br>Project ở trạng thái chờ xoá 30 ngày rồi mới mất hẳn; trong thời gian đó không phát sinh phí.</li>
+        <li><strong>Kiểm tra:</strong> <code>gcloud projects list</code> không còn <code>catxe-game</code> (hoặc hiện <code>DELETE_REQUESTED</code>). Tuần sau xem Billing Reports không còn dòng nào của project.</li>
+        <li><strong>Tuỳ chọn:</strong> nếu không dùng Google Cloud nữa, đóng tài khoản thanh toán (Billing → Account management → Close billing account).</li>
+      </ol>
+    </section>
+
+    <!-- ============================================================ -->
+    <section class="card" id="bao-mat">
+      <h2>6. Rủi ro bảo mật và cách xử lý</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Rủi ro</th><th>Mức</th><th>Cách xử lý</th></tr></thead>
+          <tbody>
+            <tr><td>Lộ dữ liệu cá nhân (họ tên, email, số điện thoại người chơi)</td><td><span class="badge badge-danger">Cao</span></td><td>Chỉ phục vụ qua HTTPS. Database không mở cổng ra ngoài. Bản sao lưu tải về phải để nơi riêng tư. Xoá dữ liệu khi khoá học kết thúc (mục 5). Chỉ thu thập đúng những gì người chơi đã đồng ý.</td></tr>
+            <tr><td>Trang <code>/admin</code> công khai trên Internet, bị dò mật khẩu</td><td><span class="badge badge-danger">Cao</span></td><td>Mật khẩu admin ngẫu nhiên ≥ 24 ký tự. Đã có sẵn: sai 5 lần thì khoá IP đó 15 phút. <span class="badge badge-new">Mới</span> Thêm khoá chung: tổng 30 lần sai trong 15 phút (mọi IP) thì tạm khoá đăng nhập admin. <span class="badge badge-new">Mới</span> Sửa cách đọc IP sau proxy (lấy phần tử <em>cuối</em> của <code>X-Forwarded-For</code>) để kẻ tấn công không né được khoá bằng cách tự gửi IP giả. Tuỳ chọn: chỉ cho phép <code>/admin*</code> từ IP của mình qua Caddy.</td></tr>
+            <tr><td>Dò mật khẩu SSH</td><td><span class="badge badge-warn">Trung bình</span></td><td>Xoá luật <code>default-allow-ssh</code>, chỉ mở 22 cho dải IAP của Google (D-04). Dùng OS Login, không đặt mật khẩu cho user.</td></tr>
+            <tr><td>Cổng 3000 bị truy cập thẳng, bỏ qua HTTPS</td><td><span class="badge badge-warn">Trung bình</span></td><td><code>ports: !reset []</code> cho app và tường lửa chỉ mở 80/443. Kiểm tra ở D-12.</td></tr>
+            <tr><td>Lộ file <code>.env</code> (mật khẩu database, admin)</td><td><span class="badge badge-warn">Trung bình</span></td><td><code>.env</code> đã nằm trong <code>.gitignore</code>; tạo tay trên máy ảo, <code>chmod 600</code>. Không dùng lại mật khẩu ở máy local. Lộ thì đổi ngay cả hai mật khẩu.</td></tr>
+            <tr><td>Máy ảo có quyền gọi API Google nếu bị chiếm</td><td><span class="badge badge-warn">Trung bình</span></td><td>Tạo máy với <code>--no-service-account --no-scopes</code> (D-05): máy không cần gọi dịch vụ Google nào.</td></tr>
+            <tr><td>Lỗ hổng hệ điều hành, image cũ</td><td><span class="badge badge-warn">Trung bình</span></td><td>Bật <code>unattended-upgrades</code> (D-06). Mỗi tháng chạy lại D-11 với <code>--pull</code> để lấy bản vá của <code>node</code>, <code>postgres</code>, <code>caddy</code>.</td></tr>
+            <tr><td>Spam đăng ký, bot gửi điểm giả</td><td><span class="badge badge-muted">Thấp</span></td><td>Đã có giới hạn 10 lần đăng ký/phút/IP; <code>TRUST_PROXY=true</code> để lấy đúng IP thật qua Caddy. Theo dõi danh sách trong <code>/admin</code>.</td></tr>
+            <tr><td>Đĩa đầy vì log, máy treo</td><td><span class="badge badge-muted">Thấp</span></td><td>Giới hạn log Docker 10 MB × 3 file; backup chỉ giữ 7 bản. Kiểm tra <code>df -h</code> khi cập nhật.</td></tr>
+            <tr><td>Hết RAM, container bị kill</td><td><span class="badge badge-muted">Thấp</span></td><td>Swap 2 GB, <code>mem_limit</code> cho từng container, <code>restart: unless-stopped</code> để tự chạy lại.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Điều kiện để bắt đầu deploy</h3>
+      <ul class="checklist">
+        <li>Đã duyệt bản kế hoạch này.</li>
+        <li>Đã cài Google Cloud CLI hoặc sẽ dùng Cloud Shell; đã có tài khoản thanh toán.</li>
+        <li>Có quyền sửa DNS của <code>catxe.io.vn</code>.</li>
+        <li>Đã thêm các file ở mục 1 và khoá đăng nhập admin, test lại trên local <span class="badge badge-new">xong 18/11/2026</span>.</li>
+        <li>Đã xác nhận khoản phí IPv4 (mục 5).</li>
+      </ul>
+    </section>
+
+    <nav class="pager" aria-label="Chuyển trang">
+      <a href="05-ke-hoach-test.html"><small>← Trước</small>05 · Kế hoạch test</a>
+      <a class="next" href="index.html"><small>Về →</small>Mục lục</a>
+    </nav>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# Reverse proxy + HTTPS tự động (Let's Encrypt) cho Đập Chuột.
+# Tên miền lấy từ biến SITE_DOMAIN (mặc định catxe.io.vn).
+# Thử trên máy local: SITE_DOMAIN=localhost → Caddy tự cấp chứng chỉ nội bộ.
+
+{$SITE_DOMAIN:catxe.io.vn} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+
+	# Caddy tự bỏ X-Forwarded-For do trình duyệt gửi lên và ghi IP thật,
+	# app đọc IP này khi TRUST_PROXY=true (giới hạn đăng ký, khoá đăng nhập admin).
+	reverse_proxy app:3000
+}
+
+www.{$SITE_DOMAIN:catxe.io.vn} {
+	redir https://{$SITE_DOMAIN:catxe.io.vn}{uri} permanent
+}

@@ -58,11 +58,19 @@ function readJson(req) {
   });
 }
 
-/** IP người gọi. Sau ngrok/proxy (TRUST_PROXY=true) lấy từ X-Forwarded-For. */
+/**
+ * IP người gọi. Sau ngrok/Caddy (TRUST_PROXY=true) lấy từ X-Forwarded-For.
+ * Lấy phần tử CUỐI: đó là IP do proxy ngay trước app ghi vào. Các phần tử đứng trước
+ * do trình duyệt tự gửi được, nên dùng chúng thì kẻ tấn công né được giới hạn theo IP.
+ * Chỉ đúng khi có đúng 1 tầng proxy (ngrok hoặc Caddy) — cấu hình hiện tại.
+ */
 function clientIp(req) {
   if (TRUST_PROXY) {
     const xff = req.headers['x-forwarded-for'];
-    if (xff) return String(xff).split(',')[0].trim();
+    if (xff) {
+      const last = String(xff).split(',').pop().trim();
+      if (last) return last;
+    }
   }
   return req.socket.remoteAddress || 'unknown';
 }

@@ -1,0 +1,56 @@
+# Bản chạy production trên máy ảo e2-micro (1 GB RAM) — ghép đè lên docker-compose.yml.
+# Chạy:  docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# Cần Docker Compose >= 2.24 (cú pháp !reset). Xem docs/06-ke-hoach-deploy.html.
+
+services:
+  db:
+    mem_limit: 256m
+    # Dữ liệu game rất nhỏ: giảm bộ nhớ đệm để vừa máy 1 GB RAM
+    command:
+      - postgres
+      - -c
+      - shared_buffers=32MB
+      - -c
+      - work_mem=2MB
+      - -c
+      - maintenance_work_mem=16MB
+      - -c
+      - max_connections=20
+    logging: &logging
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  app:
+    # Không mở cổng 3000 ra ngoài: chỉ Caddy gọi vào qua mạng nội bộ Docker
+    ports: !reset []
+    mem_limit: 192m
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=128"
+      TRUST_PROXY: "true"
+    logging: *logging
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: dap-chuot-caddy
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:-catxe.io.vn}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    mem_limit: 64m
+    restart: unless-stopped
+    logging: *logging
+
+volumes:
+  caddy-data:
+  caddy-config:

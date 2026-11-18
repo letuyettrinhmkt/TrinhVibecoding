@@ -377,7 +377,8 @@
 
   /** Gọi API, trả về { status, data }. Lỗi mạng → status 0. */
   function api(method, path, body, withToken) {
-    var headers = { 'Accept': 'application/json' };
+    // ngrok bản miễn phí chặn bằng trang cảnh báo HTML nếu thiếu header này
+    var headers = { 'Accept': 'application/json', 'ngrok-skip-browser-warning': '1' };
     if (body !== undefined) headers['Content-Type'] = 'application/json';
     if (withToken && net.player) headers['Authorization'] = 'Bearer ' + net.player.token;
     var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
